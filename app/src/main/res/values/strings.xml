@@ -94,4 +94,7 @@
 
     <string name="person_shopping">%d person shopping</string>
     <string name="people_shopping">%d people shopping</string>
+
+    <string name="hint_enter_friends_email">Enter your friend\'s email</string>
+    <string name="text_add_friend">Add New Friend</string>
 </resources>
