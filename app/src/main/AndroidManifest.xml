@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.natallia.radaman.goshopping">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+    <application
+        android:name=".GoShoppingApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.MainActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.natallia.radaman.goshopping.ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.listDetails.ListDetailsActivity"
+            android:label="@string/title_list_details_activity"
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="adjustPan">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity android:name=".ui.authentication.LoginActivity">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.authentication.AccountCreateActivity"
+            android:label="@string/title_create_account_activity"
+            android:parentActivityName=".ui.authentication.LoginActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.authentication.LoginActivity" />
+        </activity>
+        <activity
+            android:name=".ui.ApplicationSettingsActivity"
+            android:label="@string/title_action_settings" />
+        <activity
+            android:name=".ui.listSharing.ShareListActivity"
+            android:label="@string/title_share_list_activity"
+            android:parentActivityName=".ui.listDetails.ListDetailsActivity"
+            android:windowSoftInputMode="adjustPan">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.listDetails.ListDetailsActivity" />
+        </activity>
+        <activity
+            android:name=".ui.listSharing.InviteFriendActivity"
+            android:label="@string/title_add_friend_activity"
+            android:parentActivityName=".ui.listSharing.ShareListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.listSharing.ShareListActivity" />
+        </activity>
+    </application>
+
+</manifest>

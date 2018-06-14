@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="@string/preference_sort_by_time_value"
+        android:dialogTitle="@string/preference_sort_type"
+        android:entries="@array/preference_sortType_information"
+        android:entryValues="@array/preference_sortType_values"
+        android:key="@string/preference_list_name_sort_order"
+        android:summary="@string/preference_sort_upload_time"
+        android:title="@string/preference_list_title_sort" />
+</PreferenceScreen>

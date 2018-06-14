@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "72866309017",
+    "firebase_url": "https://go-shopping-59190.firebaseio.com",
+    "project_id": "go-shopping-59190",
+    "storage_bucket": "go-shopping-59190.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72866309017:android:c81d9476983b5338",
+        "android_client_info": {
+          "package_name": "com.natallia.radaman.goshopping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72866309017-q4qjk0g5s8151ufvmasq8g87u93ump7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.natallia.radaman.goshopping",
+            "certificate_hash": "9d1df17e389f3706377e08fa903ac6631f6f6df2"
+          }
+        },
+        {
+          "client_id": "72866309017-c96ip6kl66e21k6blsa11i21217vslg1.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "72866309017-c96ip6kl66e21k6blsa11i21217vslg1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsrn1jLvTbk2r-BO47V7eMNGf-Wg8ePO4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72866309017-c96ip6kl66e21k6blsa11i21217vslg1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

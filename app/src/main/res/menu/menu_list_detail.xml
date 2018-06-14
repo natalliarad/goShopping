@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.activeListDetails.ActiveListDetailsActivity">
+    <item
+        android:id="@+id/action_edit_list_name"
+        android:animateLayoutChanges="true"
+        android:icon="@drawable/ic_edit"
+        android:orderInCategory="100"
+        android:title="@string/menu_edit_list_title"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_share_list"
+        android:animateLayoutChanges="true"
+        android:icon="@drawable/ic_share"
+        android:orderInCategory="100"
+        android:title="@string/menu_share_list"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_archive"
+        android:title="@string/menu_archive"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/action_remove_list"
+        android:orderInCategory="100"
+        android:title="@string/menu_remove_list"
+        app:showAsAction="withText" />
+</menu>

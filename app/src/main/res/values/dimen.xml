@@ -1,0 +1,27 @@
+<resources>
+    <!-- Screen margins -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="land_activity_horizontal_margin">64dp</dimen>
+    <dimen name="margin_normal">36dp</dimen>
+    <dimen name="margin_small">16dp</dimen>
+    <!-- Text dimensions -->
+    <dimen name="text_size_list">12sp</dimen>
+    <dimen name="text_size_header">10sp</dimen>
+    <dimen name="text_size_list_item">16sp</dimen>
+    <dimen name="text_size_login_buttons">15sp</dimen>
+    <!-- Buttons dimensions -->
+    <dimen name="button_shopping_height">30dp</dimen>
+    <!-- Views dimensions -->
+    <dimen name="land_edit_text_padding">6dp</dimen>
+    <dimen name="edit_text_padding">14dp</dimen>
+    <dimen name="land_input_field_height">36dp</dimen>
+    <dimen name="input_field_height">50dp</dimen>
+    <dimen name="size_logo_image">100dp</dimen>
+    <dimen name="size_empty_footer">80dp</dimen>
+    <dimen name="title_bottom_margin">14dp</dimen>
+    <dimen name="list_row_height">70dp</dimen>
+    <dimen name="view_padding_left">18dp</dimen>
+    <dimen name="view_padding_right">16dp</dimen>
+    <dimen name="reset_padding">0dp</dimen>
+</resources>
