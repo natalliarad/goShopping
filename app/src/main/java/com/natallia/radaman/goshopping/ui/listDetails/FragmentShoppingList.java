@@ -31,6 +31,7 @@ import java.util.Date;
  * create an instance of this fragment.
  */
 public class FragmentShoppingList extends Fragment {
+    private String mEncodedEmail;
     private ListFirebaseAdapter mActiveListFirebaseAdapter;
     private ListView mListView;
 
@@ -42,9 +43,10 @@ public class FragmentShoppingList extends Fragment {
      * Create fragment and pass bundle with data as it's arguments
      * Right now there are not arguments...but eventually there will be.
      */
-    public static FragmentShoppingList newInstance() {
+    public static FragmentShoppingList newInstance(String encodedEmail) {
         FragmentShoppingList fragment = new FragmentShoppingList();
         Bundle args = new Bundle();
+        args.putString(AppConstants.KEY_ENCODED_EMAIL, encodedEmail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +63,7 @@ public class FragmentShoppingList extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            mEncodedEmail = getArguments().getString(AppConstants.KEY_ENCODED_EMAIL);
         }
     }
 
@@ -90,7 +93,7 @@ public class FragmentShoppingList extends Fragment {
          * Create the adapter, giving it the activity, model class, layout for each row in
          * the list and finally, a reference to the Firebase location with the list data
          */
-        mActiveListFirebaseAdapter = new ListFirebaseAdapter(options, getActivity());
+        mActiveListFirebaseAdapter = new ListFirebaseAdapter(options, getActivity(), mEncodedEmail);
         /**
          * Set the adapter to the mListView
          */
