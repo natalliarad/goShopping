@@ -56,12 +56,14 @@ public class ShoppingList {
     @JsonIgnore
     public long getTimestampLastChangedLong() {
 
-        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
+        return 1111223322;
+                //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 
     @JsonIgnore
     public long getTimestampCreatedLong() {
-        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
+        return 123345789;
+                //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 
     public HashMap getUsersShopping() {

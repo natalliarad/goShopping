@@ -183,11 +183,17 @@ public class ListDetailsActivity extends BaseActivity {
                     ShoppingListItem shoppingListItem = mListFireBaseItemAdapter.getItem(position);
 
                     if (shoppingListItem != null) {
-                        String itemName = shoppingListItem.getItemName();
-                        String itemId = mListFireBaseItemAdapter.getRef(position).getKey();
-
-                        showEditListItemNameDialog(itemName, itemId);
-                        return true;
+                        /*
+                        If the person is the owner and not shopping and the item is not bought, then
+                        they can edit it.
+                         */
+                        if (shoppingListItem.getAuthor().equals(mEncodedEmail) && !mShopping &&
+                                !shoppingListItem.isBought()) {
+                            String itemName = shoppingListItem.getItemName();
+                            String itemId = mListFireBaseItemAdapter.getRef(position).getKey();
+                            showEditListItemNameDialog(itemName, itemId);
+                            return true;
+                        }
                     }
                 }
                 return false;
