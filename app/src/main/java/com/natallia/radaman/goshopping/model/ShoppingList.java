@@ -1,5 +1,6 @@
 package com.natallia.radaman.goshopping.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 
@@ -10,6 +11,7 @@ public class ShoppingList {
     private String author;
     private HashMap<String, Object> timestampLastChanged;
     private HashMap<String, Object> timestampCreated;
+    private HashMap<String, User> usersShopping;
 
     /**
      * Required public constructor
@@ -19,7 +21,7 @@ public class ShoppingList {
 
     /**
      * Use this constructor to create new ShoppingLists.
-     * Takes shopping list listName and author. Set's the last
+     * Takes shopping list listName and owner. Set's the last
      * changed time to what is stored in ServerValue.TIMESTAMP
      *
      * @param listName
@@ -32,6 +34,7 @@ public class ShoppingList {
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
+        this.usersShopping = new HashMap<>();
     }
 
     public String getListName() {
@@ -50,14 +53,20 @@ public class ShoppingList {
         return timestampCreated;
     }
 
+    @JsonIgnore
     public long getTimestampLastChangedLong() {
 
-        return 222111;
-        //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP)
+        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 
+    @JsonIgnore
     public long getTimestampCreatedLong() {
-        return 111222;
-        //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP)
+        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
+
+    public HashMap getUsersShopping() {
+        return usersShopping;
+    }
+
+
 }

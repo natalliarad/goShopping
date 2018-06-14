@@ -1,16 +1,19 @@
 package com.natallia.radaman.goshopping.ui.listDetails;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.firebase.ui.database.FirebaseListOptions;
@@ -23,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.model.ShoppingListItem;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.ui.BaseActivity;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentAddListItemDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListItemNameDialog;
@@ -35,14 +39,18 @@ import java.util.HashMap;
 
 public class ListDetailsActivity extends BaseActivity {
     private static final String LOG_TAG = ListDetailsActivity.class.getSimpleName();
-    private DatabaseReference mActiveListRef;
+    private DatabaseReference mActiveListRef, mCurrentUserRef;
     private ListFireBaseItemAdapter mListFireBaseItemAdapter;
+    private Button mButtonShopping;
     private ListView mListView;
     private String mListId;
+    private User mCurrentUser;
+    /* Stores whether the current user is shopping */
+    private boolean mShopping = false;
     /* Stores whether the current user is the owner */
     private boolean mCurrentUserIsAuthor = false;
     private ShoppingList mShoppingList;
-    private ValueEventListener mActiveListRefListener;
+    private ValueEventListener mActiveListRefListener, mCurrentUserRefListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +69,8 @@ public class ListDetailsActivity extends BaseActivity {
          */
         mActiveListRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS).child(mListId);
+        mCurrentUserRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS).child(mEncodedEmail);
         DatabaseReference listItemsRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS).child(mListId);
 
@@ -86,6 +96,24 @@ public class ListDetailsActivity extends BaseActivity {
          * Save the most recent version of current shopping list into mShoppingList instance
          * variable an update the UI to match the current list.
          */
+
+        /* Save the most up-to-date version of current user in mCurrentUser */
+        mCurrentUserRefListener = mCurrentUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User currentUser = dataSnapshot.getValue(User.class);
+                if (currentUser != null) mCurrentUser = currentUser;
+                else finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(LOG_TAG, getString(R.string.log_error_the_read_failed) +
+                        databaseError.getMessage());
+            }
+        });
+
+        final Activity thisActivity = this;
 
         mActiveListRefListener = mActiveListRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -118,6 +146,20 @@ public class ListDetailsActivity extends BaseActivity {
 
                 /* Set title appropriately. */
                 setTitle(shoppingList.getListName());
+
+                HashMap<String, User> usersShopping = mShoppingList.getUsersShopping();
+                if (usersShopping != null && usersShopping.size() != 0 &&
+                        usersShopping.containsKey(mEncodedEmail)) {
+                    mShopping = true;
+                    mButtonShopping.setText(getString(R.string.button_stop_shopping));
+                    mButtonShopping.setBackgroundColor(ContextCompat.getColor(ListDetailsActivity
+                            .this, R.color.dark_grey));
+                } else {
+                    mButtonShopping.setText(getString(R.string.button_start_shopping));
+                    mButtonShopping.setBackgroundColor(ContextCompat.getColor(ListDetailsActivity.this,
+                            R.color.primary_dark));
+                    mShopping = false;
+                }
             }
 
             @Override
@@ -158,33 +200,34 @@ public class ListDetailsActivity extends BaseActivity {
                     String itemId = mListFireBaseItemAdapter.getRef(position).getKey();
 
                     if (selectedListItem != null) {
-                        /* Create map and fill it in with deep path multi write operations list */
-                        HashMap<String, Object> updatedItemBoughtData = new HashMap<String, Object>();
+                        if (mShopping) {
+                            /* Create map and fill it in with deep path multi write operations list */
+                            HashMap<String, Object> updatedItemBoughtData = new HashMap<String, Object>();
+                            /* Buy selected item if it is NOT already bought */
+                            if (!selectedListItem.isBought()) {
+                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, true);
+                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY,
+                                        mEncodedEmail);
+                            } else {
+                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, false);
+                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY, null);
+                            }
+                            /* Do update */
+                            DatabaseReference firebaseItemLocation = FirebaseDatabase.getInstance()
+                                    .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS)
+                                    .child(mListId).child(itemId);
+                            firebaseItemLocation.updateChildren(updatedItemBoughtData,
+                                    new DatabaseReference.CompletionListener() {
 
-                        /* Buy selected item if it is NOT already bought */
-                        if (!selectedListItem.isBought()) {
-                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, true);
-                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY,
-                                    mEncodedEmail);
-                        } else {
-                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, false);
-                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY, null);
-                        }
-                        /* Do update */
-                        DatabaseReference firebaseItemLocation = FirebaseDatabase.getInstance()
-                                .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS)
-                                .child(mListId).child(itemId);
-                        firebaseItemLocation.updateChildren(updatedItemBoughtData,
-                                new DatabaseReference.CompletionListener() {
-
-                                    @Override
-                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                        if (databaseError != null) {
-                                            Log.d(LOG_TAG, getString(R.string.log_error_updating_data) +
-                                                    databaseError.getMessage());
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                            if (databaseError != null) {
+                                                Log.d(LOG_TAG, getString(R.string.log_error_updating_data) +
+                                                        databaseError.getMessage());
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 }
             }
@@ -244,6 +287,7 @@ public class ListDetailsActivity extends BaseActivity {
         super.onDestroy();
         mListFireBaseItemAdapter.stopListening();
         mActiveListRef.removeEventListener(mActiveListRefListener);
+        mCurrentUserRef.removeEventListener(mCurrentUserRefListener);
     }
 
     /**
@@ -251,6 +295,7 @@ public class ListDetailsActivity extends BaseActivity {
      */
     private void initializeScreen() {
         mListView = findViewById(R.id.list_view_shopping_list_items);
+        mButtonShopping = findViewById(R.id.button_shopping);
         Toolbar toolbar = findViewById(R.id.app_bar);
         /* Common toolbar setup */
         setSupportActionBar(toolbar);
@@ -317,6 +362,19 @@ public class ListDetailsActivity extends BaseActivity {
      * This method is called when user taps "Start/Stop shopping" button
      */
     public void toggleShopping(View view) {
+        /**
+         * If current user is already shopping, remove current user from usersShopping map
+         */
+        DatabaseReference usersShoppingRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS)
+                .child(mListId).child(AppConstants.FIREBASE_PROPERTY_USERS_SHOPPING)
+                .child(mEncodedEmail);
 
+        /* Either add or remove the current user from the usersShopping map */
+        if (mShopping) {
+            usersShoppingRef.removeValue();
+        } else {
+            usersShoppingRef.setValue(mCurrentUser);
+        }
     }
 }

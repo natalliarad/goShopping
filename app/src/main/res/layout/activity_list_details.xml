@@ -23,7 +23,7 @@
             android:background="@android:color/white"
             android:orientation="horizontal"
             android:padding="8dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/text_view_people_shopping"
@@ -55,7 +55,7 @@
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/fab_detail_add_item"
         android:layout_toStartOf="@+id/fab_detail_add_item"
-        android:onClick="addProduct"
+        android:onClick="addMeal"
         android:src="@drawable/abc_ic_menu_copy_mtrl_am_alpha"
         android:visibility="gone"
         app:borderWidth="0dp"

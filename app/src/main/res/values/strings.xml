@@ -81,4 +81,7 @@
     <string name="dialog_message_are_you_sure_remove_item">Are you sure you want to remove this item?</string>
     <string name="log_message_auth_successful">auth successful.</string>
     <string name="oauth2_format">oauth2:%s</string>
+    <string name="button_stop_shopping">Stop Shopping</string>
+    <string name="button_start_shopping">Start Shopping</string>
+
 </resources>
