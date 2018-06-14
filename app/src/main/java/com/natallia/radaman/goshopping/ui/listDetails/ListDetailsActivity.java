@@ -28,6 +28,7 @@ import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListItemNameDialog
 import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListNameDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentRemoveListDialog;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 public class ListDetailsActivity extends BaseActivity {
     private static final String LOG_TAG = ListDetailsActivity.class.getSimpleName();
@@ -35,6 +36,8 @@ public class ListDetailsActivity extends BaseActivity {
     private ListFireBaseItemAdapter mListFireBaseItemAdapter;
     private ListView mListView;
     private String mListId;
+    /* Stores whether the current user is the owner */
+    private boolean mCurrentUserIsAuthor = false;
     private ShoppingList mShoppingList;
     private ValueEventListener mActiveListRefListener;
 
@@ -99,6 +102,14 @@ public class ListDetailsActivity extends BaseActivity {
                     return;
                 }
                 mShoppingList = shoppingList;
+                /**
+                 * Pass the shopping list to the adapter if it is not null.
+                 * We do this here because mShoppingList is null when first created.
+                 */
+                mListFireBaseItemAdapter.setShoppingList(mShoppingList);
+
+                /* Check if the current user is owner */
+                mCurrentUserIsAuthor = AppUtils.checkIfAuthor(shoppingList, mEncodedEmail);
                 /* Calling invalidateOptionsMenu causes onCreateOptionsMenu to be called */
                 invalidateOptionsMenu();
 
@@ -108,8 +119,7 @@ public class ListDetailsActivity extends BaseActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(LOG_TAG, getString(R.string.log_error_the_read_failed) +
-                        databaseError.getMessage());
+                Log.e(LOG_TAG, getString(R.string.log_error_the_read_failed) + databaseError.getMessage());
             }
         });
 
@@ -150,8 +160,8 @@ public class ListDetailsActivity extends BaseActivity {
         MenuItem archive = menu.findItem(R.id.action_archive);
 
         /* Only the edit and remove options are implemented */
-        remove.setVisible(true);
-        edit.setVisible(true);
+        remove.setVisible(mCurrentUserIsAuthor);
+        edit.setVisible(mCurrentUserIsAuthor);
         share.setVisible(false);
         archive.setVisible(false);
 

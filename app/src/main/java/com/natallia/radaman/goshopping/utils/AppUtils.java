@@ -38,4 +38,13 @@ public class AppUtils {
     public static String encodeEmail(String userEmail) {
         return userEmail.replace(".", ",");
     }
+
+    /**
+     * Return true if currentUserEmail equals to shoppingList.owner()
+     * Return false otherwise
+     */
+    public static boolean checkIfAuthor(ShoppingList shoppingList, String currentUserEmail) {
+        return (shoppingList.getAuthor() != null &&
+                shoppingList.getAuthor().equals(currentUserEmail));
+    }
 }
