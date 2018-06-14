@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +36,7 @@ import com.natallia.radaman.goshopping.ui.listAct.FragmentRemoveListDialog;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ListDetailsActivity extends BaseActivity {
@@ -42,6 +44,7 @@ public class ListDetailsActivity extends BaseActivity {
     private DatabaseReference mActiveListRef, mCurrentUserRef;
     private ListFireBaseItemAdapter mListFireBaseItemAdapter;
     private Button mButtonShopping;
+    private TextView mTextViewPeopleShopping;
     private ListView mListView;
     private String mListId;
     private User mCurrentUser;
@@ -160,6 +163,7 @@ public class ListDetailsActivity extends BaseActivity {
                             R.color.primary_dark));
                     mShopping = false;
                 }
+                setWhosShoppingText(mShoppingList.getUsersShopping());
             }
 
             @Override
@@ -295,6 +299,7 @@ public class ListDetailsActivity extends BaseActivity {
      */
     private void initializeScreen() {
         mListView = findViewById(R.id.list_view_shopping_list_items);
+        mTextViewPeopleShopping = findViewById(R.id.text_view_people_shopping);
         mButtonShopping = findViewById(R.id.button_shopping);
         Toolbar toolbar = findViewById(R.id.app_bar);
         /* Common toolbar setup */
@@ -306,6 +311,80 @@ public class ListDetailsActivity extends BaseActivity {
         /* Inflate the footer, set root layout to null*/
         View footer = getLayoutInflater().inflate(R.layout.footer, null);
         mListView.addFooterView(footer);
+    }
+
+    /**
+     * Set appropriate text for Start/Stop shopping button and Who's shopping textView
+     * depending on the current user shopping status
+     */
+    private void setWhosShoppingText(HashMap<String, User> usersShopping) {
+
+        if (usersShopping != null) {
+            ArrayList<String> usersWhoAreNotYou = new ArrayList<>();
+            /**
+             * If at least one user is shopping
+             * Add userName to the list of users shopping if this user is not current user
+             */
+            for (User user : usersShopping.values()) {
+                if (user != null && !(user.getEmail().equals(mEncodedEmail))) {
+                    usersWhoAreNotYou.add(user.getName());
+                }
+            }
+
+            int numberOfUsersShopping = usersShopping.size();
+            String usersShoppingText;
+
+            /**
+             * If current user is shopping...
+             * If current user is the only person shopping, set text to "You are shopping"
+             * If current user and one user are shopping, set text "You and userName are shopping"
+             * Else set text "You and N others shopping"
+             */
+            if (mShopping) {
+                switch (numberOfUsersShopping) {
+                    case 1:
+                        usersShoppingText = getString(R.string.text_you_are_shopping);
+                        break;
+                    case 2:
+                        usersShoppingText = String.format(
+                                getString(R.string.text_you_and_other_are_shopping),
+                                usersWhoAreNotYou.get(0));
+                        break;
+                    default:
+                        usersShoppingText = String.format(
+                                getString(R.string.text_you_and_number_are_shopping),
+                                usersWhoAreNotYou.size());
+                }
+                /**
+                 * If current user is not shopping..
+                 * If there is only one person shopping, set text to "userName is shopping"
+                 * If there are two users shopping, set text "userName1 and userName2 are shopping"
+                 * Else set text "userName and N others shopping"
+                 */
+            } else {
+                switch (numberOfUsersShopping) {
+                    case 1:
+                        usersShoppingText = String.format(
+                                getString(R.string.text_other_is_shopping),
+                                usersWhoAreNotYou.get(0));
+                        break;
+                    case 2:
+                        usersShoppingText = String.format(
+                                getString(R.string.text_other_and_other_are_shopping),
+                                usersWhoAreNotYou.get(0),
+                                usersWhoAreNotYou.get(1));
+                        break;
+                    default:
+                        usersShoppingText = String.format(
+                                getString(R.string.text_other_and_number_are_shopping),
+                                usersWhoAreNotYou.get(0),
+                                usersWhoAreNotYou.size() - 1);
+                }
+            }
+            mTextViewPeopleShopping.setText(usersShoppingText);
+        } else {
+            mTextViewPeopleShopping.setText("");
+        }
     }
 
     /**

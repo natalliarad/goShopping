@@ -84,4 +84,11 @@
     <string name="button_stop_shopping">Stop Shopping</string>
     <string name="button_start_shopping">Start Shopping</string>
 
+    <string name="text_you_are_shopping">You are shopping</string>
+    <string name="text_you_and_other_are_shopping">You and %s are shopping</string>
+    <string name="text_you_and_number_are_shopping">You and %d others are shopping</string>
+
+    <string name="text_other_is_shopping">%s is shopping</string>
+    <string name="text_other_and_other_are_shopping">%1$s and %2$s are shopping</string>
+    <string name="text_other_and_number_are_shopping">%1$s and %2$d others are shopping</string>
 </resources>
