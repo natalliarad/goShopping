@@ -3,6 +3,8 @@ package com.natallia.radaman.goshopping.model;
 public class ShoppingListItem {
     private String itemName;
     private String author;
+    private String boughtBy;
+    private boolean bought;
 
     /**
      * Required public constructor
@@ -12,7 +14,7 @@ public class ShoppingListItem {
 
     /**
      * Use this constructor to create new ShoppingListItem.
-     * Takes shopping list item name and list item owner email as params
+     * Takes shopping list item name and list item author email as params
      *
      * @param itemName
      * @param author
@@ -20,6 +22,9 @@ public class ShoppingListItem {
     public ShoppingListItem(String itemName, String author) {
         this.itemName = itemName;
         this.author = author;
+        this.boughtBy = null;
+        this.bought = false;
+
     }
 
     public String getItemName() {
@@ -29,4 +34,13 @@ public class ShoppingListItem {
     public String getAuthor() {
         return author;
     }
+
+    public String getBoughtBy() {
+        return boughtBy;
+    }
+
+    public boolean isBought() {
+        return bought;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.natallia.radaman.goshopping.ui.listDetails;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,6 +30,8 @@ import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListNameDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentRemoveListDialog;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
+
+import java.util.HashMap;
 
 public class ListDetailsActivity extends BaseActivity {
     private static final String LOG_TAG = ListDetailsActivity.class.getSimpleName();
@@ -75,7 +78,7 @@ public class ListDetailsActivity extends BaseActivity {
                 .setQuery(query, ShoppingListItem.class)
                 .setLifecycleOwner(this)
                 .build();
-        mListFireBaseItemAdapter = new ListFireBaseItemAdapter(options, this, mListId);
+        mListFireBaseItemAdapter = new ListFireBaseItemAdapter(options, this, mListId, mEncodedEmail);
         /* Create ActiveListItemAdapter and set to listView */
         mListView.setAdapter(mListFireBaseItemAdapter);
 
@@ -142,6 +145,48 @@ public class ListDetailsActivity extends BaseActivity {
                     }
                 }
                 return false;
+            }
+        });
+
+        /* Perform buy/return action on listView item click event if current user is shopping. */
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                /* Check that the view is not the empty footer item */
+                if (view.getId() != R.id.list_view_footer_empty) {
+                    final ShoppingListItem selectedListItem = mListFireBaseItemAdapter.getItem(position);
+                    String itemId = mListFireBaseItemAdapter.getRef(position).getKey();
+
+                    if (selectedListItem != null) {
+                        /* Create map and fill it in with deep path multi write operations list */
+                        HashMap<String, Object> updatedItemBoughtData = new HashMap<String, Object>();
+
+                        /* Buy selected item if it is NOT already bought */
+                        if (!selectedListItem.isBought()) {
+                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, true);
+                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY,
+                                    mEncodedEmail);
+                        } else {
+                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, false);
+                            updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY, null);
+                        }
+                        /* Do update */
+                        DatabaseReference firebaseItemLocation = FirebaseDatabase.getInstance()
+                                .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS)
+                                .child(mListId).child(itemId);
+                        firebaseItemLocation.updateChildren(updatedItemBoughtData,
+                                new DatabaseReference.CompletionListener() {
+
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        if (databaseError != null) {
+                                            Log.d(LOG_TAG, getString(R.string.log_error_updating_data) +
+                                                    databaseError.getMessage());
+                                        }
+                                    }
+                                });
+                    }
+                }
             }
         });
     }

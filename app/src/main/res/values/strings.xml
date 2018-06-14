@@ -2,6 +2,7 @@
     <string name="app_name">GoShopping</string>
     <string name="image_view_logo_image">Logo Image</string>
     <string name="remove_item_option">Remove Item</string>
+    <string name="text_you">You</string>
     <!-- Activity Title  -->
     <string name="title_list_details_activity">List Details</string>
     <string name="title_create_account_activity">Create Account</string>
