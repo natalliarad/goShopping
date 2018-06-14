@@ -29,6 +29,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.User;
+import com.natallia.radaman.goshopping.ui.BaseActivity;
 import com.natallia.radaman.goshopping.ui.MainActivity;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
@@ -36,7 +37,7 @@ import com.natallia.radaman.goshopping.utils.AppUtils;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
-public class AccountCreateActivity extends AppCompatActivity {
+public class AccountCreateActivity extends BaseActivity {
     private static final String LOG_TAG = AccountCreateActivity.class.getSimpleName();
     private ProgressDialog mAuthProgressDialog;
     private DatabaseReference mFirebaseRef;
