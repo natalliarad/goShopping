@@ -84,7 +84,7 @@ public class ListDetailsActivity extends BaseActivity {
         /**
          * Setup the adapter
          */
-        Query query = listItemsRef.orderByKey();
+        Query query = listItemsRef.orderByChild(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY);
 
         FirebaseListOptions<ShoppingListItem> options = new FirebaseListOptions.Builder<ShoppingListItem>()
                 .setLayout(R.layout.single_active_list_item)
@@ -219,8 +219,12 @@ public class ListDetailsActivity extends BaseActivity {
                                 updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY,
                                         mEncodedEmail);
                             } else {
-                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, false);
-                                updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY, null);
+                                /* Return selected item only if it was bought by current user */
+                                if (selectedListItem.getBoughtBy().equals(mEncodedEmail)) {
+                                    updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT, false);
+                                    updatedItemBoughtData.put(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY,
+                                            null);
+                                }
                             }
                             /* Do update */
                             DatabaseReference firebaseItemLocation = FirebaseDatabase.getInstance()
