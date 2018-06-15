@@ -1,7 +1,9 @@
 package com.natallia.radaman.goshopping.ui.listDetails;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -77,29 +79,6 @@ public class FragmentShoppingList extends Fragment {
         initializeScreen(rootView);
 
         /**
-         * Create Firebase references
-         */
-        DatabaseReference activeListsRef = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS);
-
-        Query query = activeListsRef.orderByKey();
-
-        FirebaseListOptions<ShoppingList> options = new FirebaseListOptions.Builder<ShoppingList>()
-                .setLayout(R.layout.single_active_list)
-                .setQuery(query, ShoppingList.class)
-                .setLifecycleOwner(this)
-                .build();
-        /**
-         * Create the adapter, giving it the activity, model class, layout for each row in
-         * the list and finally, a reference to the Firebase location with the list data
-         */
-        mActiveListFirebaseAdapter = new ListFirebaseAdapter(options, getActivity(), mEncodedEmail);
-        /**
-         * Set the adapter to the mListView
-         */
-        mListView.setAdapter(mActiveListFirebaseAdapter);
-
-        /**
          * Set interactive bits, such as click events and adapters
          */
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -122,9 +101,57 @@ public class FragmentShoppingList extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortOrder = sharedPref.getString(AppConstants.KEY_PREF_SORT_ORDER_LISTS,
+                AppConstants.ORDER_BY_KEY);
+        /**
+         * Create Firebase references
+         */
+        Query orderedActiveUserListsRef;
+        DatabaseReference activeListsRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS);
+
+        /**
+         * Sort active lists by "date created"
+         * if it's been selected in the SettingsActivity
+         */
+        if (sortOrder.equals(AppConstants.ORDER_BY_KEY)) {
+            orderedActiveUserListsRef = activeListsRef.orderByKey();
+        } else {
+            /**
+             * Sort active by lists by name or datelastChanged. Otherwise
+             * depending on what's been selected in SettingsActivity
+             */
+            orderedActiveUserListsRef = activeListsRef.orderByChild(sortOrder);
+        }
+
+        FirebaseListOptions<ShoppingList> options = new FirebaseListOptions.Builder<ShoppingList>()
+                .setLayout(R.layout.single_active_list)
+                .setQuery(orderedActiveUserListsRef, ShoppingList.class)
+                .setLifecycleOwner(this)
+                .build();
+        /**
+         * Create the adapter, giving it the activity, model class, layout for each row in
+         * the list and finally, a reference to the Firebase location with the list data
+         */
+        mActiveListFirebaseAdapter = new ListFirebaseAdapter(options, getActivity(), mEncodedEmail);
+        /**
+         * Set the adapter to the mListView
+         */
+        mListView.setAdapter(mActiveListFirebaseAdapter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mActiveListFirebaseAdapter.stopListening();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        mActiveListFirebaseAdapter.stopListening();
     }
 
     /**

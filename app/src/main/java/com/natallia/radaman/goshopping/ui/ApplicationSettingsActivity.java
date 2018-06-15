@@ -1,5 +1,6 @@
 package com.natallia.radaman.goshopping.ui;
 
+import android.content.SharedPreferences;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.natallia.radaman.goshopping.R;
+import com.natallia.radaman.goshopping.utils.AppConstants;
 
 public class ApplicationSettingsActivity extends PreferenceActivity {
 
@@ -47,6 +49,9 @@ public class ApplicationSettingsActivity extends PreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             setPreferenceSummary(preference, newValue);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor spe = sharedPref.edit();
+            spe.putString(AppConstants.KEY_PREF_SORT_ORDER_LISTS, newValue.toString()).apply();
             return true;
         }
 

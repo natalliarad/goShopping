@@ -77,4 +77,6 @@ public class AppConstants {
     public static final String ORDER_BY_OWNER_EMAIL = "orderByOwnerEmail";
 
     public static final String FIREBASE_PROPERTY_USERS_SHOPPING = "usersShopping";
+
+    public static final String KEY_PREF_SORT_ORDER_LISTS = "PERF_SORT_ORDER_LISTS";
 }
