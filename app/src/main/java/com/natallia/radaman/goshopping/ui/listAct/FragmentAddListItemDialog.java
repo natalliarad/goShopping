@@ -12,6 +12,7 @@ import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingListItem;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,6 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
          * Adds list item if the input name is not empty
          */
         if (!mItemName.equals("")) {
-
             DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);
             DatabaseReference itemsRef = FirebaseDatabase.getInstance()
@@ -75,18 +75,13 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
             HashMap<String, Object> itemToAdd =
                     (HashMap<String, Object>) new ObjectMapper().convertValue(itemToAddObject, Map.class);
 
+
             /* Add the item to the update map*/
             updatedItemToAddMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
                     + mListId + "/" + itemId, itemToAdd);
 
-            /* Make the timestamp for last changed */
-            HashMap<String, Object> changedTimestampMap = new HashMap<>();
-            changedTimestampMap.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-
-            /* Add the updated timestamp */
-            updatedItemToAddMap.put("/" + AppConstants.FIREBASE_LOCATION_ACTIVE_LISTS +
-                            "/" + mListId + "/" + AppConstants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED,
-                    changedTimestampMap);
+            /* Update affected lists timestamps */
+            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedItemToAddMap);
 
             /* Do the update */
             firebaseRef.updateChildren(updatedItemToAddMap);

@@ -9,6 +9,7 @@ import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.HashMap;
 
@@ -63,37 +64,29 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
         final String inputListName = mEditTextForList.getText().toString();
 
         /**
-         * Set input text to be the current list name if it is not empty
+         * Check that the user inputted list name is not empty, has changed the original name
+         * and that the dialog was properly initialized with the current name and id of the list.
          */
-        if (!inputListName.equals("")) {
+        if (!inputListName.equals("") && mListName != null &&
+                mListId != null && !inputListName.equals(mListName)) {
+            /* Get the location to remove from */
+            DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
-            if (mListName != null && mListId != null) {
+            /**
+             * Create map and fill it in with deep path multi write operations list
+             */
+            HashMap<String, Object> updatedListData = new HashMap<String, Object>();
 
-                /**
-                 * If editText input is not equal to the previous name
-                 */
-                if (!inputListName.equals(mListName)) {
-                    /* Get the location to remove from */
-                    DatabaseReference shoppingListRef = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS).child(mListId);
+            /* Add the value to update at the specified property for all lists */
+            AppUtils.updateMapForAllWithValue(mListId, mAuthor, updatedListData,
+                    AppConstants.FIREBASE_PROPERTY_LIST_NAME, inputListName);
 
-                    /* Make a Hashmap for the specific properties you are changing */
-                    HashMap<String, Object> updatedProperties = new HashMap<String, Object>();
-                    updatedProperties.put(AppConstants.FIREBASE_PROPERTY_LIST_NAME, inputListName);
+            /* Update affected lists timestamps */
+            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedListData);
 
-                    /* Add the timestamp for last changed to the updatedProperties Hashmap */
-                    HashMap<String, Object> changedTimestampMap = new HashMap<>();
-                    changedTimestampMap.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP,
-                            ServerValue.TIMESTAMP);
-
-                    /* Add the updated timestamp */
-                    updatedProperties.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED,
-                            changedTimestampMap);
-
-                    /* Do the update */
-                    shoppingListRef.updateChildren(updatedProperties);
-                }
-            }
+            /* Do a deep-path update */
+            firebaseRef.updateChildren(updatedListData);
         }
     }
 }

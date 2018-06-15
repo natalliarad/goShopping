@@ -9,6 +9,7 @@ import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.HashMap;
 
@@ -68,25 +69,19 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
             DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
-            /* Make a map for the item you are editing the name of */
-            HashMap<String, Object> updatedItemToAddMap = new HashMap<String, Object>();
+            /* Make a map for the item you are changing the name of */
+            HashMap<String, Object> updatedDataItemToEditMap = new HashMap<String, Object>();
 
             /* Add the new name to the update map*/
-            updatedItemToAddMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
+            updatedDataItemToEditMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
                             + mListId + "/" + mItemId + "/" + AppConstants.FIREBASE_PROPERTY_ITEM_NAME,
                     nameInput);
 
-            /* Make the timestamp for last changed */
-            HashMap<String, Object> changedTimestampMap = new HashMap<>();
-            changedTimestampMap.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-
-            /* Add the updated timestamp */
-            updatedItemToAddMap.put("/" + AppConstants.FIREBASE_LOCATION_ACTIVE_LISTS +
-                            "/" + mListId + "/" + AppConstants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED,
-                    changedTimestampMap);
+            /* Update affected lists timestamps */
+            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedDataItemToEditMap);
 
             /* Do the update */
-            firebaseRef.updateChildren(updatedItemToAddMap);
+            firebaseRef.updateChildren(updatedDataItemToEditMap);
         }
     }
 }

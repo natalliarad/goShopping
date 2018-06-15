@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,10 +39,11 @@ import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ListDetailsActivity extends BaseActivity {
     private static final String LOG_TAG = ListDetailsActivity.class.getSimpleName();
-    private DatabaseReference mActiveListRef, mCurrentUserRef;
+    private DatabaseReference mCurrentListRef, mCurrentUserRef;
     private ListFireBaseItemAdapter mListFireBaseItemAdapter;
     private Button mButtonShopping;
     private TextView mTextViewPeopleShopping;
@@ -70,8 +72,8 @@ public class ListDetailsActivity extends BaseActivity {
         /**
          * Create Firebase references
          */
-        mActiveListRef = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS).child(mListId);
+        mCurrentListRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail).child(mListId);
         mCurrentUserRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS).child(mEncodedEmail);
         DatabaseReference listItemsRef = FirebaseDatabase.getInstance()
@@ -118,7 +120,7 @@ public class ListDetailsActivity extends BaseActivity {
 
         final Activity thisActivity = this;
 
-        mActiveListRefListener = mActiveListRef.addValueEventListener(new ValueEventListener() {
+        mActiveListRefListener = mCurrentListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 /**
@@ -300,7 +302,7 @@ public class ListDetailsActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         mListFireBaseItemAdapter.stopListening();
-        mActiveListRef.removeEventListener(mActiveListRefListener);
+        mCurrentListRef.removeEventListener(mActiveListRefListener);
         mCurrentUserRef.removeEventListener(mCurrentUserRefListener);
     }
 
@@ -452,18 +454,36 @@ public class ListDetailsActivity extends BaseActivity {
      */
     public void toggleShopping(View view) {
         /**
-         * If current user is already shopping, remove current user from usersShopping map
+         * Create map and fill it in with deep path multi write operations list
          */
-        DatabaseReference usersShoppingRef = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS)
-                .child(mListId).child(AppConstants.FIREBASE_PROPERTY_USERS_SHOPPING)
-                .child(mEncodedEmail);
-
-        /* Either add or remove the current user from the usersShopping map */
+        HashMap<String, Object> updatedUserData = new HashMap<String, Object>();
+        String propertyToUpdate = AppConstants.FIREBASE_PROPERTY_USERS_SHOPPING + "/" + mEncodedEmail;
         if (mShopping) {
-            usersShoppingRef.removeValue();
+            /* Add the value to update at the specified property for all lists */
+            AppUtils.updateMapForAllWithValue(mListId, mShoppingList.getAuthor(), updatedUserData,
+                    propertyToUpdate, null);
+            /* Appends the timestamp changes for all lists */
+            AppUtils.updateMapWithTimestampLastChanged(mListId, mShoppingList.getAuthor(),
+                    updatedUserData);
+            /* Do a deep-path update */
+            mFirebaseRef.updateChildren(updatedUserData);
         } else {
-            usersShoppingRef.setValue(mCurrentUser);
+            /**
+             * If current user is not shopping, create map to represent User model add to usersShopping map
+             */
+            HashMap<String, Object> currentUser = (HashMap<String, Object>)
+                    new ObjectMapper().convertValue(mCurrentUser, Map.class);
+
+            /* Add the value to update at the specified property for all lists */
+            AppUtils.updateMapForAllWithValue(mListId, mShoppingList.getAuthor(), updatedUserData,
+                    propertyToUpdate, currentUser);
+
+            /* Appends the timestamp changes for all lists */
+            AppUtils.updateMapWithTimestampLastChanged(mListId, mShoppingList.getAuthor(),
+                    updatedUserData);
+
+            /* Do a deep-path update */
+            mFirebaseRef.updateChildren(updatedUserData);
         }
     }
 }

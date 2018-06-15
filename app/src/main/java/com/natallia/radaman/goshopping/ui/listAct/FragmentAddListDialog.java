@@ -13,14 +13,17 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class FragmentAddListDialog extends DialogFragment {
     String mEncodedEmail;
@@ -104,17 +107,21 @@ public class FragmentAddListDialog extends DialogFragment {
          * If EditText input is not empty
          */
         if (!userEnteredName.equals("")) {
-
             /**
              * Create Firebase references
              */
-            // Get the reference to the root node in Firebase
-            DatabaseReference listsRef = FirebaseDatabase.getInstance()
-                    .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS);
-            DatabaseReference newListRef = listsRef.push();
+            DatabaseReference userListsRef = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail);
+            final DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl(AppConstants.FIREBASE_URL);
+            DatabaseReference newListRef = userListsRef.push();
+
 
             /* Save listsRef.push() to maintain same random Id */
             final String listId = newListRef.getKey();
+
+            /* HashMap for data to update */
+            HashMap<String, Object> updateShoppingListData = new HashMap<>();
 
             /**
              * Set raw version of date to the ServerValue.TIMESTAMP value and save into
@@ -127,8 +134,13 @@ public class FragmentAddListDialog extends DialogFragment {
             ShoppingList newShoppingList = new ShoppingList(userEnteredName, mEncodedEmail,
                     timestampCreated);
 
-            /* Add the shopping list */
-            newListRef.setValue(newShoppingList);
+            HashMap<String, Object> shoppingListMap = (HashMap<String, Object>)
+                    new ObjectMapper().convertValue(newShoppingList, Map.class);
+
+            AppUtils.updateMapForAllWithValue(listId, mEncodedEmail,
+                    updateShoppingListData, "", shoppingListMap);
+
+            firebaseRef.updateChildren(updateShoppingListData);
 
             /* Close the dialog fragment */
             FragmentAddListDialog.this.getDialog().cancel();

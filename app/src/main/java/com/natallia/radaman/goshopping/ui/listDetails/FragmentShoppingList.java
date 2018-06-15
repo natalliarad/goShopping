@@ -111,8 +111,8 @@ public class FragmentShoppingList extends Fragment {
          */
         Query orderedActiveUserListsRef;
         DatabaseReference activeListsRef = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl(AppConstants.FIREBASE_URL_ACTIVE_LISTS);
-
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail);
+        
         /**
          * Sort active lists by "date created"
          * if it's been selected in the SettingsActivity

@@ -23,6 +23,7 @@ import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.model.ShoppingListItem;
 import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
+import com.natallia.radaman.goshopping.utils.AppUtils;
 
 import java.util.HashMap;
 
@@ -106,7 +107,7 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
     }
 
     private void removeItem(String itemId) {
-        DatabaseReference listItemsRef = FirebaseDatabase.getInstance()
+        DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
         /* Make a map for the removal */
@@ -116,17 +117,12 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
         updatedRemoveItemMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
                 + mListId + "/" + itemId, null);
 
-        /* Make the timestamp for last changed */
-        HashMap<String, Object> changedTimestampMap = new HashMap<>();
-        changedTimestampMap.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-
         /* Add the updated timestamp */
-        updatedRemoveItemMap.put("/" + AppConstants.FIREBASE_LOCATION_ACTIVE_LISTS +
-                        "/" + mListId + "/" + AppConstants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED,
-                changedTimestampMap);
+        AppUtils.updateMapWithTimestampLastChanged(mListId, mShoppingList.getAuthor(),
+                updatedRemoveItemMap);
 
         /* Do the update */
-        listItemsRef.updateChildren(updatedRemoveItemMap);
+        firebaseRef.updateChildren(updatedRemoveItemMap);
     }
 
     private void setItemAppearanceBaseOnBoughtStatus(String author, final TextView
