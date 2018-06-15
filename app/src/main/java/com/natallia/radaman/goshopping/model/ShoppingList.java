@@ -56,19 +56,21 @@ public class ShoppingList {
     @JsonIgnore
     public long getTimestampLastChangedLong() {
 
-        return 1111223322;
-                //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
+        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 
     @JsonIgnore
     public long getTimestampCreatedLong() {
-        return 123345789;
-                //(long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
+        return (long) timestampLastChanged.get(AppConstants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 
     public HashMap getUsersShopping() {
         return usersShopping;
     }
 
-
+    public void setTimestampLastChangedToNow() {
+        HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
+        timestampNowObject.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+        this.timestampLastChanged = timestampNowObject;
+    }
 }

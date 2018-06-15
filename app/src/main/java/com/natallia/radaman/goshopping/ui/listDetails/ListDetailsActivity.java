@@ -291,6 +291,8 @@ public class ListDetailsActivity extends BaseActivity {
                 return true;
             case R.id.action_share_list:
                 Intent intent = new Intent(ListDetailsActivity.this, ShareListActivity.class);
+                intent.putExtra(AppConstants.KEY_LIST_ID, mListId);
+                /* Starts an active showing the details for the selected list */
                 startActivity(intent);
                 return true;
             case R.id.action_archive:
