@@ -40,6 +40,13 @@ public class AppUtils {
     }
 
     /**
+     * Email is being decoded just once to display real email in AutocompleteFriendAdapter
+     */
+    public static String decodeEmail(String userEmail) {
+        return userEmail.replace(",", ".");
+    }
+
+    /**
      * Return true if currentUserEmail equals to shoppingList.owner()
      * Return false otherwise
      */
@@ -54,7 +61,7 @@ public class AppUtils {
      * for all ShoppingList copies.
      *
      * @param listId           The id of the shopping list.
-     * @param owner            The owner of the shopping list.
+     * @param author           The owner of the shopping list.
      * @param mapToUpdate      The map containing the key, value pairs which will be used
      *                         to update the Firebase database. This MUST be a Hashmap of key
      *                         value pairs who's urls are absolute (i.e. from the root node)
@@ -63,11 +70,10 @@ public class AppUtils {
      * @return The updated HashMap with the new value inserted in all lists
      */
     public static HashMap<String, Object> updateMapForAllWithValue
-    (final String listId,
-     final String owner, HashMap<String, Object> mapToUpdate,
+    (final String listId, final String author, HashMap<String, Object> mapToUpdate,
      String propertyToUpdate, Object valueToUpdate) {
 
-        mapToUpdate.put("/" + AppConstants.FIREBASE_LOCATION_USER_LISTS + "/" + owner + "/"
+        mapToUpdate.put("/" + AppConstants.FIREBASE_LOCATION_USER_LISTS + "/" + author + "/"
                 + listId + "/" + propertyToUpdate, valueToUpdate);
 
         return mapToUpdate;
@@ -86,8 +92,7 @@ public class AppUtils {
      * @return
      */
     public static HashMap<String, Object> updateMapWithTimestampLastChanged
-    (final String listId,
-     final String owner, HashMap<String, Object> mapToAddDateToUpdate) {
+    (final String listId, final String owner, HashMap<String, Object> mapToAddDateToUpdate) {
         /**
          * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
          */

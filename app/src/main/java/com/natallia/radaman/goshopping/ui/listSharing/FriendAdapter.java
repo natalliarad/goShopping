@@ -2,6 +2,7 @@ package com.natallia.radaman.goshopping.ui.listSharing;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 public class FriendAdapter extends FirebaseListAdapter<User> {
     Activity mActivity;
     private static final String LOG_TAG = FriendAdapter.class.getSimpleName();
-    private HashMap<DatabaseReference, ValueEventListener> mLocationListenerMap;
 
     /**
      * Public constructor that initializes private instance variables when adapter is created
@@ -34,7 +34,7 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
      */
     @Override
     protected void populateView(View v, User model, int position) {
-
+        ((TextView) v.findViewById(R.id.user_name)).setText(model.getName());
     }
 
     /**

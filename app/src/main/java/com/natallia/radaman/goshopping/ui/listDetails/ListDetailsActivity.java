@@ -34,6 +34,7 @@ import com.natallia.radaman.goshopping.ui.listAct.FragmentAddListItemDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListItemNameDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentEditListNameDialog;
 import com.natallia.radaman.goshopping.ui.listAct.FragmentRemoveListDialog;
+import com.natallia.radaman.goshopping.ui.listSharing.ShareListActivity;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
@@ -266,7 +267,7 @@ public class ListDetailsActivity extends BaseActivity {
         /* Only the edit and remove options are implemented */
         remove.setVisible(mCurrentUserIsAuthor);
         edit.setVisible(mCurrentUserIsAuthor);
-        share.setVisible(false);
+        share.setVisible(mCurrentUserIsAuthor);
         archive.setVisible(false);
 
         return true;
@@ -289,6 +290,8 @@ public class ListDetailsActivity extends BaseActivity {
                 removeList();
                 return true;
             case R.id.action_share_list:
+                Intent intent = new Intent(ListDetailsActivity.this, ShareListActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.action_archive:
                 archiveList();

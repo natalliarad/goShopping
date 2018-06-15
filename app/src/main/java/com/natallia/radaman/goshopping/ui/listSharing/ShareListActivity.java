@@ -7,14 +7,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
 
+import com.firebase.ui.database.FirebaseListOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.natallia.radaman.goshopping.R;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.ui.BaseActivity;
+import com.natallia.radaman.goshopping.utils.AppConstants;
 
 /**
  * Allows for you to check and un-check friends that you share the current list with
  */
 public class ShareListActivity extends BaseActivity {
     private static final String LOG_TAG = ShareListActivity.class.getSimpleName();
+    private FriendAdapter mFriendAdapter;
     private ListView mListView;
 
     @Override
@@ -25,11 +32,32 @@ public class ShareListActivity extends BaseActivity {
          * Link layout elements from XML and setup the toolbar
          */
         initializeScreen();
+
+        /**
+         * Create Firebase references
+         */
+        DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_FRIENDS).child(mEncodedEmail);
+
+        /**
+         * Setup the adapter
+         */
+        Query query = currentUserFriendsRef.orderByKey();
+
+        FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
+                .setLayout(R.layout.single_user_item)
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
+        mFriendAdapter = new FriendAdapter(options, this);
+        /* Create ActiveListItemAdapter and set to listView */
+        mListView.setAdapter(mFriendAdapter);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mFriendAdapter.stopListening();
     }
 
     /**
