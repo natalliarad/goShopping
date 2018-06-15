@@ -18,7 +18,7 @@
         android:focusableInTouchMode="true" />
 
     <ListView
-        android:id="@+id/list_view_friends_share"
+        android:id="@+id/list_view_friend_share"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

@@ -97,4 +97,8 @@
 
     <string name="hint_enter_friends_email">Enter your friend\'s email</string>
     <string name="text_add_friend">Add New Friend</string>
+
+    <string name="pref_name_sort_order_lists">pref_sort_order_lists</string>
+    <string name="pref_title_sort_lists">Lists ordering</string>
+    <string name="pref_sort_list_label_sortType">Order by</string>
 </resources>

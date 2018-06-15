@@ -1,6 +1,7 @@
 package com.natallia.radaman.goshopping.ui;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -96,7 +97,16 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
+        switch (id) {
+            case R.id.action_sort:
+                /**
+                 * Open SettingsActivity with sort options when Sort icon was clicked
+                 */
+                startActivity(new Intent(this, ApplicationSettingsActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
