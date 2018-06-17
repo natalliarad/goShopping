@@ -3,6 +3,8 @@ package com.natallia.radaman.goshopping.ui.listSharing;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -20,6 +22,7 @@ import com.natallia.radaman.goshopping.utils.AppConstants;
 public class InviteFriendActivity extends BaseActivity {
     private EditText mEditTextAddFriendEmail;
     private AutocompleteFriendAdapter mFriendsAutocompleteAdapter;
+    private String mInput;
     private ListView mListViewAutocomplete;
     private DatabaseReference mUsersRef;
 
@@ -39,24 +42,59 @@ public class InviteFriendActivity extends BaseActivity {
         initializeScreen();
 
         /**
-         * Setup the adapter
+         * Set interactive bits, such as click events/adapters
          */
-        Query query = mUsersRef.orderByChild(AppConstants.FIREBASE_PROPERTY_EMAIL);
+        mEditTextAddFriendEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
-                .setLayout(R.layout.single_autocomplete_item)
-                .setQuery(query, User.class)
-                .setLifecycleOwner(this)
-                .build();
-        mFriendsAutocompleteAdapter = new AutocompleteFriendAdapter(options, this, mEncodedEmail);
-        /* Create ActiveListItemAdapter and set to listView */
-        mListViewAutocomplete.setAdapter(mFriendsAutocompleteAdapter);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                /* Get the input after every textChanged event and transform it to lowercase */
+                mInput = mEditTextAddFriendEmail.getText().toString().toLowerCase();
+
+                /* Clean up the old adapter */
+                if (mFriendsAutocompleteAdapter != null)
+                    mFriendsAutocompleteAdapter.stopListening();
+                /* Nullify the adapter data if the input length is less than 2 characters */
+                if (mInput.equals("") || mInput.length() < 2) {
+                    mListViewAutocomplete.setAdapter(null);
+
+                    /* Define and set the adapter otherwise. */
+                } else {
+                    /**
+                     * Setup the adapter
+                     */
+                    Query query = mUsersRef.orderByChild(AppConstants.FIREBASE_PROPERTY_EMAIL)
+                            .startAt(mInput).endAt(mInput + "~").limitToFirst(5);
+
+                    FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
+                            .setLayout(R.layout.single_autocomplete_item)
+                            .setQuery(query, User.class)
+                            .setLifecycleOwner(InviteFriendActivity.this)
+                            .build();
+                    mFriendsAutocompleteAdapter = new AutocompleteFriendAdapter(options,
+                            InviteFriendActivity.this, mEncodedEmail);
+                    /* Create ActiveListItemAdapter and set to listView */
+                    mListViewAutocomplete.setAdapter(mFriendsAutocompleteAdapter);
+                }
+            }
+        });
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mFriendsAutocompleteAdapter.stopListening();
+        if (mFriendsAutocompleteAdapter != null) {
+            mFriendsAutocompleteAdapter.stopListening();
+        }
     }
 
     /**
