@@ -130,6 +130,7 @@ public class ShareListActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mFriendAdapter.cleanup();
         mFriendAdapter.stopListening();
         mActiveListRef.removeEventListener(mActiveListRefListener);
         mSharedWithRef.removeEventListener(mSharedWithListener);

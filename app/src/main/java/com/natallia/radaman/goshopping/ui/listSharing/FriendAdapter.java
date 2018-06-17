@@ -32,6 +32,7 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
     private String mListId;
     private DatabaseReference mFirebaseRef;
     private HashMap<String, User> mSharedUsersList;
+    private HashMap<DatabaseReference, ValueEventListener> mLocationListenerMap;
 
     /**
      * Public constructor that initializes private instance variables when adapter is created
@@ -42,6 +43,7 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
         this.mListId = listId;
         mFirebaseRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL);
+        mLocationListenerMap = new HashMap<>();
     }
 
     /**
@@ -122,6 +124,8 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
                         databaseError.getMessage());
             }
         });
+        /* Add the listener to the HashMap so that it can be removed on cleanup */
+        mLocationListenerMap.put(sharedFriendInShoppingListRef, listener);
     }
 
     /**
@@ -187,9 +191,17 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
             newSharedWith.remove(friendToAddOrRemove.getEmail());
         }
 
-        AppUtils.updateMapWithTimestampLastChanged(newSharedWith, mListId, mShoppingList.getAuthor()    ,
+        AppUtils.updateMapWithTimestampLastChanged(newSharedWith, mListId, mShoppingList.getAuthor(),
                 updatedUserData);
 
         return updatedUserData;
+    }
+
+    public void cleanup() {
+        /* Clean up the event listeners */
+        for (HashMap.Entry<DatabaseReference, ValueEventListener> listenerToClean : mLocationListenerMap
+                .entrySet()) {
+            listenerToClean.getKey().removeEventListener(listenerToClean.getValue());
+        }
     }
 }
