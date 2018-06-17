@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
@@ -22,16 +23,19 @@ import java.util.HashMap;
 public class FragmentRemoveListDialog extends DialogFragment {
     String mListId;
     String mListAuthor;
+    HashMap mSharedWith;
     final static String LOG_TAG = FragmentRemoveListDialog.class.getSimpleName();
 
     /**
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
      */
-    public static FragmentRemoveListDialog newInstance(ShoppingList shoppingList, String listId) {
+    public static FragmentRemoveListDialog newInstance(ShoppingList shoppingList, String listId,
+                                                       HashMap<String, User> sharedWithUsers) {
         FragmentRemoveListDialog removeListDialogFragment = new FragmentRemoveListDialog();
         Bundle bundle = new Bundle();
         bundle.putString(AppConstants.KEY_LIST_ID, listId);
         bundle.putString(AppConstants.KEY_LIST_OWNER, shoppingList.getAuthor());
+        bundle.putSerializable(AppConstants.KEY_SHARED_WITH_USERS, sharedWithUsers);
         removeListDialogFragment.setArguments(bundle);
         return removeListDialogFragment;
     }
@@ -44,6 +48,7 @@ public class FragmentRemoveListDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         mListId = getArguments().getString(AppConstants.KEY_LIST_ID);
         mListAuthor = getArguments().getString(AppConstants.KEY_LIST_OWNER);
+        mSharedWith = (HashMap) getArguments().getSerializable(AppConstants.KEY_SHARED_WITH_USERS);
     }
 
     @Override
@@ -75,10 +80,10 @@ public class FragmentRemoveListDialog extends DialogFragment {
         /**
          * Create map and fill it in with deep path multi write operations list
          */
-        HashMap<String, Object> removeListData = new HashMap<String, Object>();
+        HashMap<String, Object> removeListData = new HashMap<>();
 
         /* Remove the ShoppingLists from both user lists and active lists */
-        AppUtils.updateMapForAllWithValue(mListId, mListAuthor, removeListData,
+        AppUtils.updateMapForAllWithValue(mSharedWith, mListId, mListAuthor, removeListData,
                 "", null);
 
         /* Remove the associated list items */

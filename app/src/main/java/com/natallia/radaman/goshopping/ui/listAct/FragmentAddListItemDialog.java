@@ -11,6 +11,7 @@ import com.natallia.radaman.goshopping.model.ShoppingList;
 
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingListItem;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
@@ -22,11 +23,12 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
      */
     public static FragmentAddListItemDialog newInstance(ShoppingList shoppingList, String listId,
-                                                        String encodedEmail) {
+                                                        String encodedEmail,
+                                                        HashMap<String, User> sharedWithUsers) {
         FragmentAddListItemDialog addListItemDialogFragment = new FragmentAddListItemDialog();
 
         Bundle bundle = FragmentEditListDialog.newInstanceHelper(shoppingList,
-                R.layout.dialog_add_item, listId, encodedEmail);
+                R.layout.dialog_add_item, listId, encodedEmail, sharedWithUsers);
         addListItemDialogFragment.setArguments(bundle);
 
         return addListItemDialogFragment;
@@ -64,7 +66,7 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS).child(mListId);
 
             /* Make a map for the item you are adding */
-            HashMap<String, Object> updatedItemToAddMap = new HashMap<String, Object>();
+            HashMap<String, Object> updatedItemToAddMap = new HashMap<>();
 
             /* Save push() to maintain same random Id */
             DatabaseReference newRef = itemsRef.push();
@@ -81,7 +83,7 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
                     + mListId + "/" + itemId, itemToAdd);
 
             /* Update affected lists timestamps */
-            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedItemToAddMap);
+            AppUtils.updateMapWithTimestampLastChanged(mSharedWith, mListId, mAuthor, updatedItemToAddMap);
 
             /* Do the update */
             firebaseRef.updateChildren(updatedItemToAddMap);

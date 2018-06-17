@@ -100,8 +100,6 @@ public class FragmentAddListDialog extends DialogFragment {
      * Add new active list
      */
     public void addShoppingList() {
-        // Get the string that the user entered into the EditText and make an object with it
-        // We'll use "Anonymous Owner" for the owner because we don't have user accounts yet
         String userEnteredName = mEditTextListName.getText().toString();
         /**
          * If EditText input is not empty
@@ -137,7 +135,7 @@ public class FragmentAddListDialog extends DialogFragment {
             HashMap<String, Object> shoppingListMap = (HashMap<String, Object>)
                     new ObjectMapper().convertValue(newShoppingList, Map.class);
 
-            AppUtils.updateMapForAllWithValue(listId, mEncodedEmail,
+            AppUtils.updateMapForAllWithValue(null, listId, mEncodedEmail,
                     updateShoppingListData, "", shoppingListMap);
 
             firebaseRef.updateChildren(updateShoppingListData);

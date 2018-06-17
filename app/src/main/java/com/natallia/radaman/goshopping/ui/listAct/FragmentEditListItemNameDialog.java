@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
@@ -20,11 +21,12 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
      */
     public static FragmentEditListItemNameDialog newInstance(ShoppingList shoppingList, String itemName,
-                                                             String itemId, String listId, String encodedEmail) {
+                                                             String itemId, String listId, String encodedEmail,
+                                                             HashMap<String, User> sharedWithUsers) {
         FragmentEditListItemNameDialog editListItemNameDialogFragment = new FragmentEditListItemNameDialog();
 
         Bundle bundle = FragmentEditListDialog.newInstanceHelper(shoppingList, R.layout.dialog_edit_item,
-                listId, encodedEmail);
+                listId, encodedEmail, sharedWithUsers);
         bundle.putString(AppConstants.KEY_LIST_ITEM_NAME, itemName);
         bundle.putString(AppConstants.KEY_LIST_ITEM_ID, itemId);
         editListItemNameDialogFragment.setArguments(bundle);
@@ -70,7 +72,7 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
             /* Make a map for the item you are changing the name of */
-            HashMap<String, Object> updatedDataItemToEditMap = new HashMap<String, Object>();
+            HashMap<String, Object> updatedDataItemToEditMap = new HashMap<>();
 
             /* Add the new name to the update map*/
             updatedDataItemToEditMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
@@ -78,7 +80,8 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
                     nameInput);
 
             /* Update affected lists timestamps */
-            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedDataItemToEditMap);
+            AppUtils.updateMapWithTimestampLastChanged(mSharedWith, mListId, mAuthor,
+                    updatedDataItemToEditMap);
 
             /* Do the update */
             firebaseRef.updateChildren(updatedDataItemToEditMap);

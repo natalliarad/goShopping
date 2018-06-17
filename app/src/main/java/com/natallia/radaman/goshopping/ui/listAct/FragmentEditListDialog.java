@@ -14,13 +14,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.natallia.radaman.goshopping.model.ShoppingList;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.R;
+
+import java.util.HashMap;
 
 public abstract class FragmentEditListDialog extends DialogFragment {
     String mListId, mAuthor, mEncodedEmail;
     EditText mEditTextForList;
     int mResource;
+    HashMap mSharedWith;
 
     /**
      * Helper method that creates a basic bundle of all of the information needed to change
@@ -31,8 +35,9 @@ public abstract class FragmentEditListDialog extends DialogFragment {
      * @return
      */
     protected static Bundle newInstanceHelper(ShoppingList shoppingList, int resource, String listId,
-                                              String encodedEmail) {
+                                              String encodedEmail, HashMap<String, User> sharedWithUsers) {
         Bundle bundle = new Bundle();
+        bundle.putSerializable(AppConstants.KEY_SHARED_WITH_USERS, sharedWithUsers);
         bundle.putString(AppConstants.KEY_LIST_ID, listId);
         bundle.putInt(AppConstants.KEY_LAYOUT_RESOURCE, resource);
         bundle.putString(AppConstants.KEY_LIST_OWNER, shoppingList.getAuthor());
@@ -46,6 +51,7 @@ public abstract class FragmentEditListDialog extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSharedWith = (HashMap) getArguments().getSerializable(AppConstants.KEY_SHARED_WITH_USERS);
         mListId = getArguments().getString(AppConstants.KEY_LIST_ID);
         mResource = getArguments().getInt(AppConstants.KEY_LAYOUT_RESOURCE);
         mAuthor = getArguments().getString(AppConstants.KEY_LIST_OWNER);

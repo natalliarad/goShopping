@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.R;
+import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
@@ -17,16 +18,19 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
     private static final String LOG_TAG = FragmentEditListNameDialog.class.getSimpleName();
     String mListName;
     String mListId;
+    HashMap mSharedWith;
 
     /**
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
      */
     public static FragmentEditListNameDialog newInstance(ShoppingList shoppingList, String listId,
-                                                         String encodedEmail) {
+                                                         String encodedEmail,
+                                                         HashMap<String, User> sharedWithUsers) {
         FragmentEditListNameDialog editListNameDialogFragment = new FragmentEditListNameDialog();
         Bundle bundle = FragmentEditListDialog.newInstanceHelper(shoppingList,
-                R.layout.dialog_edit_list, listId, encodedEmail);
+                R.layout.dialog_edit_list, listId, encodedEmail, sharedWithUsers);
         bundle.putString(AppConstants.KEY_LIST_NAME, shoppingList.getListName());
+        editListNameDialogFragment.setArguments(bundle);
         editListNameDialogFragment.setArguments(bundle);
         return editListNameDialogFragment;
     }
@@ -38,7 +42,7 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListName = getArguments().getString(AppConstants.KEY_LIST_NAME);
-        mListId = getArguments().getString(AppConstants.KEY_LIST_ID);
+        //mListId = getArguments().getString(AppConstants.KEY_LIST_ID);
     }
 
     @Override
@@ -76,14 +80,15 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
             /**
              * Create map and fill it in with deep path multi write operations list
              */
-            HashMap<String, Object> updatedListData = new HashMap<String, Object>();
+            HashMap<String, Object> updatedListData = new HashMap<>();
 
             /* Add the value to update at the specified property for all lists */
-            AppUtils.updateMapForAllWithValue(mListId, mAuthor, updatedListData,
+            AppUtils.updateMapForAllWithValue(mSharedWith, mListId, mAuthor, updatedListData,
                     AppConstants.FIREBASE_PROPERTY_LIST_NAME, inputListName);
 
             /* Update affected lists timestamps */
-            AppUtils.updateMapWithTimestampLastChanged(mListId, mAuthor, updatedListData);
+            AppUtils.updateMapWithTimestampLastChanged(mSharedWith, mListId, mAuthor, updatedListData);
+
 
             /* Do a deep-path update */
             firebaseRef.updateChildren(updatedListData);

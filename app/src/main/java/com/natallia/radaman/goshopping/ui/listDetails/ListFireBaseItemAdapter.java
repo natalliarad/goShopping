@@ -32,6 +32,7 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
     private ShoppingList mShoppingList;
     private String mListId;
     private String mEncodedEmail;
+    private HashMap<String, User> mSharedWithUsers;
 
     /**
      * Public constructor that initializes private instance variables when adapter is created
@@ -49,6 +50,11 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
      */
     public void setShoppingList(ShoppingList shoppingList) {
         this.mShoppingList = shoppingList;
+        this.notifyDataSetChanged();
+    }
+
+    public void setSharedWithUsers(HashMap<String, User> sharedWithUsers) {
+        this.mSharedWithUsers = sharedWithUsers;
         this.notifyDataSetChanged();
     }
 
@@ -111,15 +117,15 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
         /* Make a map for the removal */
-        HashMap<String, Object> updatedRemoveItemMap = new HashMap<String, Object>();
+        HashMap<String, Object> updatedRemoveItemMap = new HashMap<>();
 
         /* Remove the item by passing null */
         updatedRemoveItemMap.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/"
                 + mListId + "/" + itemId, null);
 
         /* Add the updated timestamp */
-        AppUtils.updateMapWithTimestampLastChanged(mListId, mShoppingList.getAuthor(),
-                updatedRemoveItemMap);
+        AppUtils.updateMapWithTimestampLastChanged(mSharedWithUsers,
+                mListId, mShoppingList.getAuthor(), updatedRemoveItemMap);
 
         /* Do the update */
         firebaseRef.updateChildren(updatedRemoveItemMap);

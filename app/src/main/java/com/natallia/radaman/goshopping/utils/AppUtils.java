@@ -70,11 +70,18 @@ public class AppUtils {
      * @return The updated HashMap with the new value inserted in all lists
      */
     public static HashMap<String, Object> updateMapForAllWithValue
-    (final String listId, final String author, HashMap<String, Object> mapToUpdate,
+    (final HashMap<String, User> sharedWith, final String listId,
+     final String author, HashMap<String, Object> mapToUpdate,
      String propertyToUpdate, Object valueToUpdate) {
 
         mapToUpdate.put("/" + AppConstants.FIREBASE_LOCATION_USER_LISTS + "/" + author + "/"
                 + listId + "/" + propertyToUpdate, valueToUpdate);
+        if (sharedWith != null) {
+            for (User user : sharedWith.values()) {
+                mapToUpdate.put("/" + AppConstants.FIREBASE_LOCATION_USER_LISTS + "/" + user.getEmail() + "/"
+                        + listId + "/" + propertyToUpdate, valueToUpdate);
+            }
+        }
 
         return mapToUpdate;
     }
@@ -85,21 +92,22 @@ public class AppUtils {
      * last changed timestamp for all ShoppingList copies.
      *
      * @param listId               The id of the shopping list.
-     * @param owner                The owner of the shopping list.
+     * @param author               The owner of the shopping list.
      * @param mapToAddDateToUpdate The map containing the key, value pairs which will be used
      *                             to update the Firebase database. This MUST be a Hashmap of key
      *                             value pairs who's urls are absolute (i.e. from the root node)
      * @return
      */
     public static HashMap<String, Object> updateMapWithTimestampLastChanged
-    (final String listId, final String owner, HashMap<String, Object> mapToAddDateToUpdate) {
+    (final HashMap<String, User> sharedWith, final String listId,
+     final String author, HashMap<String, Object> mapToAddDateToUpdate) {
         /**
          * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
          */
         HashMap<String, Object> timestampNowHash = new HashMap<>();
         timestampNowHash.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
-        updateMapForAllWithValue(listId, owner, mapToAddDateToUpdate,
+        updateMapForAllWithValue(sharedWith, listId, author, mapToAddDateToUpdate,
                 AppConstants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED, timestampNowHash);
 
         return mapToAddDateToUpdate;
