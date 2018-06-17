@@ -2,7 +2,10 @@ package com.natallia.radaman.goshopping.ui.listAct;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
@@ -17,8 +20,8 @@ import java.util.HashMap;
 public class FragmentEditListNameDialog extends FragmentEditListDialog {
     private static final String LOG_TAG = FragmentEditListNameDialog.class.getSimpleName();
     String mListName;
-    String mListId;
-    HashMap mSharedWith;
+    //String mListId;
+    //HashMap mSharedWith;
 
     /**
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
@@ -30,7 +33,6 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
         Bundle bundle = FragmentEditListDialog.newInstanceHelper(shoppingList,
                 R.layout.dialog_edit_list, listId, encodedEmail, sharedWithUsers);
         bundle.putString(AppConstants.KEY_LIST_NAME, shoppingList.getListName());
-        editListNameDialogFragment.setArguments(bundle);
         editListNameDialogFragment.setArguments(bundle);
         return editListNameDialogFragment;
     }
@@ -91,7 +93,14 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
 
 
             /* Do a deep-path update */
-            firebaseRef.updateChildren(updatedListData);
+            firebaseRef.updateChildren(updatedListData, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    /* Now that we have the timestamp, update the reversed timestamp */
+                    AppUtils.updateTimestampReversed(databaseError, LOG_TAG, mListId,
+                            mSharedWith, mAuthor);
+                }
+            });
         }
     }
 }

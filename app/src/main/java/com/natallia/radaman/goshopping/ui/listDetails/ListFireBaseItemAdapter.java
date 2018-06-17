@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -128,7 +129,13 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
                 mListId, mShoppingList.getAuthor(), updatedRemoveItemMap);
 
         /* Do the update */
-        firebaseRef.updateChildren(updatedRemoveItemMap);
+        firebaseRef.updateChildren(updatedRemoveItemMap, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                AppUtils.updateTimestampReversed(databaseError, "ListFireBaseItemAdapter", mListId,
+                        mSharedWithUsers, mShoppingList.getAuthor());
+            }
+        });
     }
 
     private void setItemAppearanceBaseOnBoughtStatus(String author, final TextView

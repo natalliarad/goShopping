@@ -109,4 +109,6 @@
     <string name="sort_by_author_value">author</string>
     <string name="toast_is_already_your_friend">%s is already your friend!</string>
     <string name="toast_you_cant_add_yourself">You can\'t add yourself as a friend.</string>
+    <string name="pref_sort_list_label_most_recently_changed_entry">Most Recently Changed</string>
+    <string name="sort_by_most_recently_changed_value">timestampLastChangedReverse/timestamp</string>
 </resources>

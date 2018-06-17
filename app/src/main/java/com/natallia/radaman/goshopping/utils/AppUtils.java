@@ -112,4 +112,57 @@ public class AppUtils {
 
         return mapToAddDateToUpdate;
     }
+
+    /**
+     * Once an update is made to a ShoppingList, this method is responsible for updating the
+     * reversed timestamp to be equal to the negation of the current timestamp. This comes after
+     * the updateMapWithTimestampChanged because ServerValue.TIMESTAMP must be resolved to a long
+     * value.
+     *
+     * @param firebaseError      The Firebase error, if there was one, from the original update. This
+     *                           method should only run if the shopping list's timestamp last changed
+     *                           was successfully updated.
+     * @param logTagFromActivity The log tag from the activity calling this method
+     * @param listId             The updated shopping list push ID
+     * @param sharedWith         The list of users that this updated shopping list is shared with
+     * @param author             The owner of the updated shopping list
+     */
+    public static void updateTimestampReversed(final DatabaseError firebaseError, final String
+            logTagFromActivity,
+                                               final String listId, final HashMap<String, User> sharedWith,
+                                               final String author) {
+        if (firebaseError != null) {
+            Log.d(logTagFromActivity, "Error updating timestamp: " + firebaseError.getMessage());
+        } else {
+            final DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl(AppConstants.FIREBASE_URL);
+            firebaseRef.child(AppConstants.FIREBASE_LOCATION_USER_LISTS).child(author)
+                    .child(listId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ShoppingList list = dataSnapshot.getValue(ShoppingList.class);
+                    if (list != null) {
+                        long timeReverse = -(list.getTimestampLastChangedLong());
+                        String timeReverseLocation = AppConstants
+                                .FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED_REVERSE
+                                + "/" + AppConstants.FIREBASE_PROPERTY_TIMESTAMP;
+
+                        /**
+                         * Create map and fill it in with deep path multi write operations list
+                         */
+                        HashMap<String, Object> updatedShoppingListData = new HashMap<String, Object>();
+
+                        updateMapForAllWithValue(sharedWith, listId, author, updatedShoppingListData,
+                                timeReverseLocation, timeReverse);
+                        firebaseRef.updateChildren(updatedShoppingListData);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(logTagFromActivity, "Error updating data: " + firebaseError.getMessage());
+                }
+            });
+        }
+    }
 }

@@ -181,7 +181,7 @@ public class ListDetailsActivity extends BaseActivity {
         mSharedWithListener = mSharedWithRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mSharedWithUsers = new HashMap<String, User>();
+                mSharedWithUsers = new HashMap<>();
                 for (DataSnapshot currentUser : dataSnapshot.getChildren()) {
                     mSharedWithUsers.put(currentUser.getKey(), currentUser.getValue(User.class));
                 }
@@ -496,7 +496,14 @@ public class ListDetailsActivity extends BaseActivity {
             AppUtils.updateMapWithTimestampLastChanged(mSharedWithUsers,
                     mListId, mShoppingList.getAuthor(), updatedUserData);
             /* Do a deep-path update */
-            mFirebaseRef.updateChildren(updatedUserData);
+            mFirebaseRef.updateChildren(updatedUserData, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    /* Updates the reversed timestamp */
+                    AppUtils.updateTimestampReversed(databaseError, LOG_TAG, mListId, mSharedWithUsers,
+                            mShoppingList.getAuthor());
+                }
+            });
         } else {
             /**
              * If current user is not shopping, create map to represent User model add to usersShopping map
@@ -513,7 +520,14 @@ public class ListDetailsActivity extends BaseActivity {
                     mListId, mShoppingList.getAuthor(), updatedUserData);
 
             /* Do a deep-path update */
-            mFirebaseRef.updateChildren(updatedUserData);
+            mFirebaseRef.updateChildren(updatedUserData, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    /* Updates the reversed timestamp */
+                    AppUtils.updateTimestampReversed(databaseError, LOG_TAG, mListId, mSharedWithUsers,
+                            mShoppingList.getAuthor());
+                }
+            });
         }
     }
 }

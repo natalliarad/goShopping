@@ -2,6 +2,7 @@ package com.natallia.radaman.goshopping.ui.listSharing;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -92,7 +93,13 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
                             HashMap<String, Object> updatedUserData = updateFriendInSharedWith(false, friend);
 
                             /* Do a deep-path update */
-                            mFirebaseRef.updateChildren(updatedUserData);
+                            mFirebaseRef.updateChildren(updatedUserData, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    AppUtils.updateTimestampReversed(databaseError, LOG_TAG, mListId,
+                                            mSharedUsersList, mShoppingList.getAuthor());
+                                }
+                            });
                         }
                     });
                 } else {
@@ -112,7 +119,13 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
                             HashMap<String, Object> updatedUserData = updateFriendInSharedWith(true, friend);
 
                             /* Do a deep-path update */
-                            mFirebaseRef.updateChildren(updatedUserData);
+                            mFirebaseRef.updateChildren(updatedUserData, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    AppUtils.updateTimestampReversed(databaseError, LOG_TAG, mListId,
+                                            mSharedUsersList, mShoppingList.getAuthor());
+                                }
+                            });
                         }
                     });
                 }
@@ -120,8 +133,7 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(LOG_TAG, mActivity.getString(R.string.log_error_the_read_failed) +
-                        databaseError.getMessage());
+                Log.e(LOG_TAG, mActivity.getString(R.string.log_error_the_read_failed) + databaseError.getMessage());
             }
         });
         /* Add the listener to the HashMap so that it can be removed on cleanup */
