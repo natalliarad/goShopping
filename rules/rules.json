@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": "true",
+    ".write": "true",
+    "users": {
+      "$userEncodedEmail": {
+        "email": {
+        },
+        "name": {
+          ".validate": "newData.isString()"
+        },
+        "timestampJoined": {
+          "timestamp": {
+          }
+        }
+      }
+    },
+    "userLists": {
+      "$userEncodedEmail": {
+        "$listId": {
+          "listName": {
+          }
+        }
+      }
+    }
+  }
+}

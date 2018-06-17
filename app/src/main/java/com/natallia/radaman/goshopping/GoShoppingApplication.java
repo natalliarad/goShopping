@@ -6,7 +6,7 @@ public class GoShoppingApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        /* Initialize Firebase */
+        /* Enable disk persistence */
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 }
