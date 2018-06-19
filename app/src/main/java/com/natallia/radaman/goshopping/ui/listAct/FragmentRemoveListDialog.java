@@ -90,14 +90,14 @@ public class FragmentRemoveListDialog extends DialogFragment {
         removeListData.put("/" + AppConstants.FIREBASE_LOCATION_SHOPPING_LIST_ITEMS + "/" + mListId,
                 null);
 
+        removeListData.put("/" + AppConstants.FIREBASE_LOCATION_OWNER_MAPPINGS + "/" + mListId,
+                null);
         /* Do a deep-path update */
         listToRemoveRef.updateChildren(removeListData, new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(@Nullable DatabaseError databaseError,
-                                   @NonNull DatabaseReference databaseReference) {
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    Log.e(LOG_TAG, getString(R.string.log_error_updating_data) + databaseError
-                            .getMessage());
+                    Log.e(LOG_TAG, getString(R.string.log_error_updating_data) + databaseError.getMessage());
                 }
             }
         });

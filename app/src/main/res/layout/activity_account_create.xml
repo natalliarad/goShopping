@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".ui.authentication.AccountCreateActivity">
+    tools:context=".ui.authentication.AccountCreateActivity"
+    android:background="@color/background_green_light">
 
     <LinearLayout
         android:id="@+id/linear_layout_create_account_activity"

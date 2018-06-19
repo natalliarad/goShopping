@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.listSharing.InviteFriendActivity">
+    tools:context=".ui.listSharing.InviteFriendActivity"
+    android:background="@color/background_green_light">
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/app_bar"

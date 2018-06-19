@@ -111,4 +111,6 @@
     <string name="toast_you_cant_add_yourself">You can\'t add yourself as a friend.</string>
     <string name="pref_sort_list_label_most_recently_changed_entry">Most Recently Changed</string>
     <string name="sort_by_most_recently_changed_value">timestampLastChangedReverse/timestamp</string>
+    <string name="log_message_password_changed_successfully">Password changed successfully from temporary password to </string>
+    <string name="error_verify_email_address">Please, verify your email address</string>
 </resources>

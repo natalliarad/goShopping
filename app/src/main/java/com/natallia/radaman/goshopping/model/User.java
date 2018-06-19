@@ -45,4 +45,8 @@ public class User {
     public boolean isHasLoggedInWithPassword() {
         return hasLoggedInWithPassword;
     }
+
+    public void setHasLoggedInWithPassword(boolean hasLoggedInWithPassword) {
+        this.hasLoggedInWithPassword = hasLoggedInWithPassword;
+    }
 }
