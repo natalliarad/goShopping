@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/input_field_height"
     android:layout_margin="2dp"
-    android:background="@android:color/white"
     android:clickable="false"
     android:descendantFocusability="blocksDescendants"
     android:focusable="false"
     android:foreground="?selectableItemBackground"
     android:orientation="horizontal"
     android:paddingLeft="@dimen/margin_small"
-    android:paddingStart="@dimen/margin_small">
+    android:paddingStart="@dimen/margin_small"
+    android:background="@color/background_green_light">
 
     <ImageView
         android:id="@+id/iv_user_image"
