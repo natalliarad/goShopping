@@ -30,7 +30,7 @@ import com.natallia.radaman.goshopping.utils.AppConstants;
 
 /**
  * Represents the home screen of the app which
- * has a ViewPager with ShoppingListsFragment and MealsFragment
+ * has a ViewPager with ShoppingListsFragment and ProductsFragment
  */
 public class MainActivity extends BaseActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -41,26 +41,21 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /**
-         * Create Firebase references
-         */
+
+        /* Create Firebase references */
         mUserRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS).child(mEncodedEmail);
-        /**
-         * Link layout elements from XML and setup the toolbar
-         */
+
+        /* Link layout elements from XML and setup the toolbar */
         initializeScreen();
-        /**
-         * Add ValueEventListeners to Firebase references
-         * to control get data and control behavior and visibility of elements
-         */
+
+        /* Add ValueEventListeners to Firebase references
+         * to control get data and control behavior and visibility of elements */
         mUserRefListener = mUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                /**
-                 * Set the activity title to current user name if user is not null
-                 */
+                /* Set the activity title to current user name if user is not null */
                 if (user != null) {
                     /* Assumes that the first word in the user's name is the user's first name. */
                     String firstName = user.getName().split("\\s+")[0];
@@ -79,8 +74,6 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Override onOptionsItemSelected to use main_menu instead of BaseActivity menu
-     *
-     * @param menu
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,17 +84,13 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Override onOptionsItemSelected to add action_settings only to the MainActivity
-     *
-     * @param item
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_sort:
-                /**
-                 * Open SettingsActivity with sort options when Sort icon was clicked
-                 */
+                /* Open SettingsActivity with sort options when Sort icon was clicked */
                 startActivity(new Intent(this, ApplicationSettingsActivity.class));
                 return true;
             default:
@@ -124,15 +113,13 @@ public class MainActivity extends BaseActivity {
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
-        /**
-         * Create SectionPagerAdapter, set it as adapter to viewPager with setOffscreenPageLimit(2)
-         **/
+
+        /* Create SectionPagerAdapter, set it as adapter to viewPager with setOffscreenPageLimit(2) */
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
-        /**
-         * Setup the mTabLayout with view pager
-         */
+
+        /* Setup the mTabLayout with view pager */
         tabLayout.setupWithViewPager(viewPager);
     }
 
@@ -165,16 +152,12 @@ public class MainActivity extends BaseActivity {
 
         /**
          * Use positions (0 and 1) to find and instantiate fragments with newInstance()
-         *
-         * @param position
          */
         @Override
         public Fragment getItem(int position) {
 
             Fragment fragment = null;
-            /**
-             * Set fragment to different fragments depending on position in ViewPager
-             */
+            /* Set fragment to different fragments depending on position in ViewPager */
             switch (position) {
                 case 0:
                     fragment = FragmentShoppingList.newInstance(mEncodedEmail);
@@ -196,8 +179,6 @@ public class MainActivity extends BaseActivity {
 
         /**
          * Set string resources as titles for each fragment by it's position
-         *
-         * @param position
          */
         @Override
         public CharSequence getPageTitle(int position) {

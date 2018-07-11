@@ -27,7 +27,8 @@ public class FragmentRemoveListDialog extends DialogFragment {
     final static String LOG_TAG = FragmentRemoveListDialog.class.getSimpleName();
 
     /**
-     * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
+     * Public static constructor that creates fragment and passes a bundle with data into it
+     * when adapter is created
      */
     public static FragmentRemoveListDialog newInstance(ShoppingList shoppingList, String listId,
                                                        HashMap<String, User> sharedWithUsers) {
@@ -51,6 +52,7 @@ public class FragmentRemoveListDialog extends DialogFragment {
         mSharedWith = (HashMap) getArguments().getSerializable(AppConstants.KEY_SHARED_WITH_USERS);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomTheme_Dialog)
@@ -77,9 +79,7 @@ public class FragmentRemoveListDialog extends DialogFragment {
     private void removeList() {
         DatabaseReference listToRemoveRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL);
-        /**
-         * Create map and fill it in with deep path multi write operations list
-         */
+        /* Create map and fill it in with deep path multi write operations list */
         HashMap<String, Object> removeListData = new HashMap<>();
 
         /* Remove the ShoppingLists from both user lists and active lists */

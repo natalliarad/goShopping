@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 
 import com.natallia.radaman.goshopping.R;
@@ -23,7 +22,8 @@ import java.util.Map;
 
 public class FragmentAddListItemDialog extends FragmentEditListDialog {
     /**
-     * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
+     * Public static constructor that creates fragment and passes a bundle with data into it
+     * when adapter is created
      */
     public static FragmentAddListItemDialog newInstance(ShoppingList shoppingList, String listId,
                                                         String encodedEmail,
@@ -47,9 +47,8 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        /** {@link FragmentEditListDialog#createDialogHelper(int)} is a
-         * superclass method that creates the dialog
-         **/
+        /* {@link FragmentEditListDialog#createDialogHelper(int)} is a
+         * superclass method that creates the dialogn */
         return super.createDialogHelper(R.string.positive_button_add_list_item);
     }
 
@@ -59,9 +58,7 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
     @Override
     protected void doListEdit() {
         String mItemName = mEditTextForList.getText().toString();
-        /**
-         * Adds list item if the input name is not empty
-         */
+        /* Adds list item if the input name is not empty */
         if (!mItemName.equals("")) {
             DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);
@@ -75,7 +72,7 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
             DatabaseReference newRef = itemsRef.push();
             String itemId = newRef.getKey();
 
-            /* Make a POJO for the item and immediately turn it into a HashMap */
+            /* Make a Java Object for the item and immediately turn it into a HashMap */
             ShoppingListItem itemToAddObject = new ShoppingListItem(mItemName, mEncodedEmail);
             HashMap<String, Object> itemToAdd =
                     (HashMap<String, Object>) new ObjectMapper().convertValue(itemToAddObject, Map.class);
@@ -98,11 +95,8 @@ public class FragmentAddListItemDialog extends FragmentEditListDialog {
                 }
             });
 
-            /**
-             * Close the dialog fragment when done
-             */
+            /* Close the dialog fragment when done */
             FragmentAddListItemDialog.this.getDialog().cancel();
         }
     }
-
 }

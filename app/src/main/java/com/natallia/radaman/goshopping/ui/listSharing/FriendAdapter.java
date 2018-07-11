@@ -61,35 +61,28 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_LISTS_SHARED_WITH)
                 .child(mListId).child(friend.getEmail());
 
-        /**
-         * Gets the value of the friend from the ShoppingList's sharedWith list of users
+        /* Gets the value of the friend from the ShoppingList's sharedWith list of users
          * and then allows the friend to be toggled as shared with or not.
-         *
          * The friend in the snapshot (sharedFriendInShoppingList) will either be a User object
          * (if they are in the the sharedWith list) or null (if they are not in the sharedWith
-         * list)
-         */
+         * list) */
 
         ValueEventListener listener = sharedFriendInShoppingListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 final User sharedFriendInShoppingList = dataSnapshot.getValue(User.class);
 
-                /**
-                 * If list is already being shared with this friend, set the buttonToggleShare
+                /* If list is already being shared with this friend, set the buttonToggleShare
                  * to remove selected friend from sharedWith onClick and change the
-                 * buttonToggleShare image to green
-                 */
+                 * buttonToggleShare image to green */
                 if (sharedFriendInShoppingList != null) {
                     buttonToggleShare.setImageResource(R.drawable.ic_check_shared);
                     buttonToggleShare.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            /**
-                             * Create map and fill it in with deep path multi write operations list.
-                             * Use false to mark that you are removing this friend
-                             */
+                            /* Create map and fill it in with deep path multi write operations list.
+                             Use false to mark that you are removing this friend */
                             HashMap<String, Object> updatedUserData = updateFriendInSharedWith(false, friend);
 
                             /* Do a deep-path update */
@@ -104,18 +97,14 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
                     });
                 } else {
 
-                    /**
-                     * Set the buttonToggleShare onClickListener to add selected friend to sharedWith
-                     * and change the buttonToggleShare image to grey otherwise
-                     */
+                    /* Set the buttonToggleShare onClickListener to add selected friend to sharedWith
+                     * and change the buttonToggleShare image to grey otherwise */
                     buttonToggleShare.setImageResource(R.drawable.ic_add);
                     buttonToggleShare.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            /**
-                             * Create map and fill it in with deep path multi write operations list
-                             */
+                            /* Create map and fill it with deep path multi write operations list*/
                             HashMap<String, Object> updatedUserData = updateFriendInSharedWith(true, friend);
 
                             /* Do a deep-path update */
@@ -161,7 +150,6 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
      *
      * @param addFriend           This is true if the friend is being added, false is the friend is being removed.
      * @param friendToAddOrRemove This is the friend to either add or remove
-     * @return
      */
     private HashMap<String, Object> updateFriendInSharedWith(Boolean addFriend, User friendToAddOrRemove) {
         HashMap<String, Object> updatedUserData = new HashMap<>();
@@ -169,11 +157,9 @@ public class FriendAdapter extends FirebaseListAdapter<User> {
         HashMap<String, User> newSharedWith = new HashMap<>(mSharedUsersList);
         /* Update the sharedWith List for this Shopping List */
         if (addFriend) {
-            /**
-             * Changes the timestamp changed to now; Because of ancestry issues, we cannot
+            /* Changes the timestamp changed to now; Because of ancestry issues, we cannot
              * have one updateChildren call that both creates data and then updates that same data
-             * because updateChildren has no way of knowing what was the intended update
-             */
+             * because updateChildren has no way of knowing what was the intended update */
             mShoppingList.setTimestampLastChangedToNow();
             /* Make it a HashMap of the shopping list and user */
             final HashMap<String, Object> shoppingListForFirebase = (HashMap<String, Object>)

@@ -43,32 +43,24 @@ public class AutocompleteFriendAdapter extends FirebaseListAdapter<User> {
         TextView textViewFriendEmail = view.findViewById(R.id.text_view_autocomplete_item);
         textViewFriendEmail.setText(AppUtils.decodeEmail(user.getEmail()));
 
-        /**
-         * Set the onClickListener to a single list item
+        /* Set the onClickListener to a single list item
          * If selected email is not friend already and if it is not the
-         * current user's email, we add selected user to current user's friends
-         */
+         * current user's email, we add selected user to current user's friends */
         textViewFriendEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                /**
-                 * If selected user is not current user proceed
-                 */
+                /* If selected user is not current user proceed */
                 if (isNotCurrentUser(user)) {
                     DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_FRIENDS).child(mEncodedEmail);
                     final DatabaseReference friendRef = currentUserFriendsRef.child(user.getEmail());
 
-                    /**
-                     * Add listener for single value event to perform a one time operation
-                     */
+                    /* Add listener for single value event to perform a one time operation */
                     friendRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            /**
-                             * Add selected user to current user's friends if not in friends yet
-                             */
+                            /* Add selected user to current user's friends if not in friends yet */
                             if (isNotAlreadyAdded(dataSnapshot, user)) {
                                 friendRef.setValue(user);
                                 mActivity.finish();

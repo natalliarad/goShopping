@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,28 +17,19 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseError;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.ValueEventListener;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.ui.BaseActivity;
-import com.natallia.radaman.goshopping.ui.MainActivity;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,21 +40,17 @@ public class AccountCreateActivity extends BaseActivity {
     private FirebaseAuth mAuth;
     private EditText mEditTextUsernameCreate, mEditTextEmailCreate, mEditTextPasswordCreate;
     private String mUserName, mUserEmail, mPassword;
-    private SecureRandom mRandom = new SecureRandom();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_create);
-        /**
-         * Create Firebase references
-         */
+
+        /* Create Firebase references */
         mFirebaseRef = FirebaseDatabase.getInstance().getReferenceFromUrl(AppConstants.FIREBASE_URL);
         mAuth = FirebaseAuth.getInstance();
 
-        /**
-         * Link layout elements from XML and setup the progress dialog
-         */
+        /* Link layout elements from XML and setup the progress dialog */
         initializeScreen();
     }
 
@@ -86,7 +72,6 @@ public class AccountCreateActivity extends BaseActivity {
         mEditTextEmailCreate = findViewById(R.id.edit_text_email_create);
         mEditTextPasswordCreate = findViewById(R.id.edit_text_password_create);
         LinearLayout linearLayoutCreateAccountActivity = findViewById(R.id.linear_layout_create_account_activity);
-        //initializeBackground(linearLayoutCreateAccountActivity);
 
         /* Setup the progress dialog that is displayed later when authenticating with Firebase */
         mAuthProgressDialog = new ProgressDialog(this);
@@ -111,31 +96,23 @@ public class AccountCreateActivity extends BaseActivity {
     public void onCreateAccountPressed(View view) {
         mUserName = mEditTextUsernameCreate.getText().toString();
         mUserEmail = mEditTextEmailCreate.getText().toString().toLowerCase();
-        //mPassword = new BigInteger(130, mRandom).toString(32);
         mPassword = mEditTextPasswordCreate.getText().toString();
-        /**
-         * Check that email and user name are okay
-         */
+        /* Check that email and user name are okay */
         boolean validEmail = isEmailValid(mUserEmail);
         boolean validUserName = isUserNameValid(mUserName);
         if (!validEmail || !validUserName) return;
-        /**
-         * If everything was valid show the progress dialog to indicate that
-         * account creation has started
-         */
+        /* If everything was valid show the progress dialog to indicate that
+         * account creation has started */
         mAuthProgressDialog.show();
-        /**
-         * Create new user with specified email and password
-         */
+        /* Create new user with specified email and password */
         mAuth.createUserWithEmailAndPassword(mUserEmail, mPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            /**
-                             * If user was successfully created, run resetPassword() to send temporary 24h
-                             * password to the user's email and make sure that user owns specified email
-                             */
+                            /* If user was successfully created, run sendEmailVerification
+                             * (FirebaseUser user) to send verification email and make sure that
+                             * user owns specified email */
                             final FirebaseUser user = mAuth.getCurrentUser();
                             sendEmailVerification(user);
                         } else {
@@ -151,14 +128,12 @@ public class AccountCreateActivity extends BaseActivity {
     }
 
     /**
-     * Creates a new user in Firebase from the Java POJO
+     * Creates a new user in Firebase
      */
     private void createUserInFirebaseHelper(final String authUserId) {
         final String encodedEmail = AppUtils.encodeEmail(mUserEmail);
-        /**
-         * Create the user and uid mapping
-         */
-        HashMap<String, Object> userAndUidMapping = new HashMap<String, Object>();
+        /* Create the user and uid mapping */
+        HashMap<String, Object> userAndUidMapping = new HashMap<>();
 
         /* Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap */
         HashMap<String, Object> timestampJoined = new HashMap<>();
@@ -182,10 +157,8 @@ public class AccountCreateActivity extends BaseActivity {
                     mFirebaseRef.child(AppConstants.FIREBASE_LOCATION_UID_MAPPINGS)
                             .child(authUserId).setValue(encodedEmail);
                 }
-                /**
-                 *  The value has been set or it failed; either way, log out the user since
-                 *  they were only logged in with a temp password
-                 **/
+                /* The value has been set or it failed; either way, log out the user since
+                 *  they were only logged in with a temp password */
                 mAuth.signOut();
             }
         });
@@ -234,20 +207,15 @@ public class AccountCreateActivity extends BaseActivity {
                                         SharedPreferences sp = PreferenceManager
                                                 .getDefaultSharedPreferences(AccountCreateActivity.this);
                                         SharedPreferences.Editor spe = sp.edit();
-                                        /**
-                                         * Save name and email to sharedPreferences to create User database record
-                                         * when the registered user will sign in for the first time
-                                         */
+                                        /* Save name and email to sharedPreferences to create
+                                         * User database record when the registered user will
+                                         * sign in for the first time */
                                         spe.putString(AppConstants.KEY_SIGNUP_EMAIL, mUserEmail).apply();
-                                        /**
-                                         * Encode user email replacing "." with ","
-                                         * to be able to use it as a Firebase db key
-                                         */
+                                        /* Encode user email replacing "." with ","
+                                         * to be able to use it as a Firebase db key */
                                         createUserInFirebaseHelper(firebaseUser.getUid());
-                                        /**
-                                         *  Password reset email sent, open app chooser to pick app
-                                         *  for handling inbox email intent
-                                         */
+                                        /* Verification email sent, open app chooser to pick app
+                                         *  for handling inbox email intent */
                                         Intent intent = new Intent(Intent.ACTION_MAIN);
                                         intent.addCategory(Intent.CATEGORY_APP_EMAIL);
                                         try {

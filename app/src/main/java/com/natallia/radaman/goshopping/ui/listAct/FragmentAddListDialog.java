@@ -71,9 +71,7 @@ public class FragmentAddListDialog extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_add_list_dialog, null);
         mEditTextListName = rootView.findViewById(R.id.edit_text_list_name);
 
-        /**
-         * Call addShoppingList() when user taps "Done" keyboard action
-         */
+        /* Call addShoppingList() when user taps "Done" keyboard action */
         mEditTextListName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -104,13 +102,9 @@ public class FragmentAddListDialog extends DialogFragment {
      */
     public void addShoppingList() {
         String userEnteredName = mEditTextListName.getText().toString();
-        /**
-         * If EditText input is not empty
-         */
+        /* If EditText input is not empty */
         if (!userEnteredName.equals("")) {
-            /**
-             * Create Firebase references
-             */
+            /* Create Firebase references */
             DatabaseReference userListsRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail);
             final DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
@@ -124,10 +118,8 @@ public class FragmentAddListDialog extends DialogFragment {
             /* HashMap for data to update */
             HashMap<String, Object> updateShoppingListData = new HashMap<>();
 
-            /**
-             * Set raw version of date to the ServerValue.TIMESTAMP value and save into
-             * timestampCreatedMap
-             */
+            /* Set raw version of date to the ServerValue.TIMESTAMP value and save into
+             * timestampCreatedMap */
             HashMap<String, Object> timestampCreated = new HashMap<>();
             timestampCreated.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 

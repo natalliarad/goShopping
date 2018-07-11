@@ -2,14 +2,12 @@ package com.natallia.radaman.goshopping.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -50,18 +48,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .requestEmail()
                 .build();
 
-        /**
-         * Build a GoogleApiClient with access to the Google Sign-In API and the
-         * options specified by gso.
-         */
+        /* Build a GoogleApiClient with access to the Google Sign-In API and the
+         * options specified by gso. */
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        /**
-         * Getting mProvider and mEncodedEmail from SharedPreferences
-         */
+        /* Getting mProvider and mEncodedEmail from SharedPreferences */
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(BaseActivity.this);
         /* Get mEncodedEmail and mProvider from SharedPreferences, use null as default value */
         mEncodedEmail = sp.getString(AppConstants.KEY_ENCODED_EMAIL, null);
@@ -144,17 +138,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     }
 
-//    protected void initializeBackground(LinearLayout linearLayout) {
-//        /**
-//         * Set different background image for landscape and portrait layouts
-//         */
-//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            linearLayout.setBackgroundResource(R.drawable.background_loginscreen_land);
-//        } else {
-//            linearLayout.setBackgroundResource(R.drawable.background_loginscreen);
-//        }
-//    }
-
     /**
      * Logs out the user from their current session and starts LoginActivity.
      * Also disconnects the mGoogleApiClient if connected and provider is Google
@@ -169,7 +152,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         new ResultCallback<Status>() {
                             @Override
                             public void onResult(Status status) {
-                                //nothing
                             }
                         });
             }
@@ -177,7 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     private void takeUserToLoginScreenOnUnAuth() {
-        /* Move user to LoginActivity, and remove the backstack */
+        /* Move user to LoginActivity, and remove the back stack */
         Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

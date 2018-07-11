@@ -1,6 +1,5 @@
 package com.natallia.radaman.goshopping.ui.listDetails;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,7 +52,7 @@ public class ListDetailsActivity extends BaseActivity {
     private User mCurrentUser;
     /* Stores whether the current user is shopping */
     private boolean mShopping = false;
-    /* Stores whether the current user is the owner */
+    /* Stores whether the current user is the author */
     private boolean mCurrentUserIsAuthor = false;
     private ShoppingList mShoppingList;
     private ValueEventListener mCurrentUserRefListener, mCurrentListRefListener, mSharedWithListener;
@@ -63,7 +62,7 @@ public class ListDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_details);
-        /* Get the push ID from the extra passed by ShoppingListFragment */
+        /* Get the push ID from the extra passed by FragmentShoppingList */
         Intent intent = this.getIntent();
         mListId = intent.getStringExtra(AppConstants.KEY_LIST_ID);
         if (mListId == null) {
@@ -71,9 +70,7 @@ public class ListDetailsActivity extends BaseActivity {
             finish();
             return;
         }
-        /**
-         * Create Firebase references
-         */
+        /* Create Firebase references */
         mCurrentListRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail).child(mListId);
         mCurrentUserRef = FirebaseDatabase.getInstance()
@@ -83,13 +80,9 @@ public class ListDetailsActivity extends BaseActivity {
         DatabaseReference listItemsRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_SHOPPING_LIST_ITEMS).child(mListId);
 
-        /**
-         * Link layout elements from XML and setup the toolbar
-         */
+        /* Link layout elements from XML and setup the toolbar */
         initializeScreen();
-        /**
-         * Setup the adapter
-         */
+        /* Setup the adapter */
         Query query = listItemsRef.orderByChild(AppConstants.FIREBASE_PROPERTY_BOUGHT_BY);
 
         FirebaseListOptions<ShoppingListItem> options = new FirebaseListOptions.Builder<ShoppingListItem>()
@@ -101,10 +94,8 @@ public class ListDetailsActivity extends BaseActivity {
         /* Create ActiveListItemAdapter and set to listView */
         mListView.setAdapter(mListFireBaseItemAdapter);
 
-        /**
-         * Save the most recent version of current shopping list into mShoppingList instance
-         * variable an update the UI to match the current list.
-         */
+        /* Save the most recent version of current shopping list into mShoppingList instance
+         * variable an update the UI to match the current list. */
 
         /* Save the most up-to-date version of current user in mCurrentUser */
         mCurrentUserRefListener = mCurrentUserRef.addValueEventListener(new ValueEventListener() {
@@ -122,33 +113,23 @@ public class ListDetailsActivity extends BaseActivity {
             }
         });
 
-        final Activity thisActivity = this;
-
         mCurrentListRefListener = mCurrentListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                /**
-                 * Saving the most recent version of current shopping list into mShoppingList if present
+                /* Saving the most recent version of current shopping list into mShoppingList if present
                  * finish() the activity if the list is null (list was removed or unshared by
-                 * it's author while current user is in the list details activity)
-                 */
+                 * it's author while current user is in the list details activity) */
                 ShoppingList shoppingList = dataSnapshot.getValue(ShoppingList.class);
                 if (shoppingList == null) {
                     finish();
-                    /**
-                     * Make sure to call return, otherwise the rest of the method will execute,
-                     * even after calling finish.
-                     */
                     return;
                 }
                 mShoppingList = shoppingList;
-                /**
-                 * Pass the shopping list to the adapter if it is not null.
-                 * We do this here because mShoppingList is null when first created.
-                 */
+                /* Pass the shopping list to the adapter if it is not null.
+                 * We do this here because mShoppingList is null when first created. */
                 mListFireBaseItemAdapter.setShoppingList(mShoppingList);
 
-                /* Check if the current user is owner */
+                /* Check if the current user is author */
                 mCurrentUserIsAuthor = AppUtils.checkIfAuthor(shoppingList, mEncodedEmail);
                 /* Calling invalidateOptionsMenu causes onCreateOptionsMenu to be called */
                 invalidateOptionsMenu();
@@ -195,9 +176,7 @@ public class ListDetailsActivity extends BaseActivity {
             }
         });
 
-        /**
-         * Show edit list item name dialog on listView item long click event
-         */
+        /* Show edit list item name dialog on listView item long click event */
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -207,8 +186,8 @@ public class ListDetailsActivity extends BaseActivity {
 
                     if (shoppingListItem != null) {
                         /*
-                        If the person is the owner and not shopping and the item is not bought, then
-                        they can edit it.
+                        If the person is the author and not shopping and the item is not bought,
+                        then they can edit it.
                          */
                         if (shoppingListItem.getAuthor().equals(mEncodedEmail) && !mShopping &&
                                 !shoppingListItem.isBought()) {
@@ -276,9 +255,7 @@ public class ListDetailsActivity extends BaseActivity {
         /* Inflate the menu; this adds items to the action bar if it is present. */
         getMenuInflater().inflate(R.menu.menu_list_detail, menu);
 
-        /**
-         * Get menu items
-         */
+        /* Get menu items */
         MenuItem remove = menu.findItem(R.id.action_remove_list);
         MenuItem edit = menu.findItem(R.id.action_edit_list_name);
         MenuItem share = menu.findItem(R.id.action_share_list);
@@ -298,15 +275,11 @@ public class ListDetailsActivity extends BaseActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_edit_list_name:
-                /**
-                 * Show edit list dialog when the edit action is selected
-                 */
+                /* Show edit list dialog when the edit action is selected */
                 showEditListNameDialog();
                 return true;
             case R.id.action_remove_list:
-                /**
-                 * removeList() when the remove action is selected
-                 */
+                /* removeList() when the remove action is selected */
                 removeList();
                 return true;
             case R.id.action_share_list:
@@ -359,10 +332,8 @@ public class ListDetailsActivity extends BaseActivity {
 
         if (usersShopping != null) {
             ArrayList<String> usersWhoAreNotYou = new ArrayList<>();
-            /**
-             * If at least one user is shopping
-             * Add userName to the list of users shopping if this user is not current user
-             */
+            /* If at least one user is shopping
+             * Add userName to the list of users shopping if this user is not current user */
             for (User user : usersShopping.values()) {
                 if (user != null && !(user.getEmail().equals(mEncodedEmail))) {
                     usersWhoAreNotYou.add(user.getName());
@@ -372,12 +343,10 @@ public class ListDetailsActivity extends BaseActivity {
             int numberOfUsersShopping = usersShopping.size();
             String usersShoppingText;
 
-            /**
-             * If current user is shopping...
+            /* If current user is shopping...
              * If current user is the only person shopping, set text to "You are shopping"
              * If current user and one user are shopping, set text "You and userName are shopping"
-             * Else set text "You and N others shopping"
-             */
+             * Else set text "You and N others shopping" */
             if (mShopping) {
                 switch (numberOfUsersShopping) {
                     case 1:
@@ -393,12 +362,10 @@ public class ListDetailsActivity extends BaseActivity {
                                 getString(R.string.text_you_and_number_are_shopping),
                                 usersWhoAreNotYou.size());
                 }
-                /**
-                 * If current user is not shopping..
+                /* If current user is not shopping..
                  * If there is only one person shopping, set text to "userName is shopping"
                  * If there are two users shopping, set text "userName1 and userName2 are shopping"
-                 * Else set text "userName and N others shopping"
-                 */
+                 * Else set text "userName and N others shopping" */
             } else {
                 switch (numberOfUsersShopping) {
                     case 1:
@@ -429,13 +396,6 @@ public class ListDetailsActivity extends BaseActivity {
      * Archive current list when user selects "Archive" menu item
      */
     public void archiveList() {
-    }
-
-    /**
-     * Start AddItemsFromProductActivity to add meal ingredients into the shopping list
-     * when the user taps on "add product" fab
-     */
-    public void addProduct(View view) {
     }
 
     /**
@@ -482,9 +442,7 @@ public class ListDetailsActivity extends BaseActivity {
      * This method is called when user taps "Start/Stop shopping" button
      */
     public void toggleShopping(View view) {
-        /**
-         * Create map and fill it in with deep path multi write operations list
-         */
+        /* Create map and fill it in with deep path multi write operations list */
         HashMap<String, Object> updatedUserData = new HashMap<>();
         String propertyToUpdate = AppConstants.FIREBASE_PROPERTY_USERS_SHOPPING + "/" + mEncodedEmail;
         if (mShopping) {
@@ -505,9 +463,8 @@ public class ListDetailsActivity extends BaseActivity {
                 }
             });
         } else {
-            /**
-             * If current user is not shopping, create map to represent User model add to usersShopping map
-             */
+            /* If current user is not shopping, create map to represent User model add
+             * to usersShopping map */
             HashMap<String, Object> currentUser = (HashMap<String, Object>)
                     new ObjectMapper().convertValue(mCurrentUser, Map.class);
 

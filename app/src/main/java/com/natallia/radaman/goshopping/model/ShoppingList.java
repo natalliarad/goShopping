@@ -21,12 +21,8 @@ public class ShoppingList {
     }
 
     /**
-     * Use this constructor to create new ShoppingLists.
-     * Takes shopping list listName and owner. Set's the last
-     * changed time to what is stored in ServerValue.TIMESTAMP
-     *
-     * @param listName
-     * @param author
+     * Constructor to create new ShoppingLists. Takes shopping list listName and author. Set's the
+     * last changed time to what is stored in ServerValue.TIMESTAMP
      */
     public ShoppingList(String listName, String author, HashMap<String, Object> timestampCreated) {
         this.listName = listName;
@@ -81,7 +77,7 @@ public class ShoppingList {
     }
 
     public void setTimestampLastChangedToNow() {
-        HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
+        HashMap<String, Object> timestampNowObject = new HashMap<>();
         timestampNowObject.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
     }

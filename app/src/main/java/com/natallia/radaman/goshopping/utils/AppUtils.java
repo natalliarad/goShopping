@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -96,14 +95,11 @@ public class AppUtils {
      * @param mapToAddDateToUpdate The map containing the key, value pairs which will be used
      *                             to update the Firebase database. This MUST be a Hashmap of key
      *                             value pairs who's urls are absolute (i.e. from the root node)
-     * @return
      */
     public static HashMap<String, Object> updateMapWithTimestampLastChanged
     (final HashMap<String, User> sharedWith, final String listId,
      final String author, HashMap<String, Object> mapToAddDateToUpdate) {
-        /**
-         * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
-         */
+        /* Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap */
         HashMap<String, Object> timestampNowHash = new HashMap<>();
         timestampNowHash.put(AppConstants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
@@ -147,10 +143,8 @@ public class AppUtils {
                                 .FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED_REVERSE
                                 + "/" + AppConstants.FIREBASE_PROPERTY_TIMESTAMP;
 
-                        /**
-                         * Create map and fill it in with deep path multi write operations list
-                         */
-                        HashMap<String, Object> updatedShoppingListData = new HashMap<String, Object>();
+                        /* Create map and fill it in with deep path multi write operations list */
+                        HashMap<String, Object> updatedShoppingListData = new HashMap<>();
 
                         updateMapForAllWithValue(sharedWith, listId, author, updatedShoppingListData,
                                 timeReverseLocation, timeReverse);

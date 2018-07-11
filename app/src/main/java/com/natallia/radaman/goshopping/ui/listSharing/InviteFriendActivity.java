@@ -1,6 +1,5 @@
 package com.natallia.radaman.goshopping.ui.listSharing;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -13,10 +12,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.natallia.radaman.goshopping.R;
-import com.natallia.radaman.goshopping.model.ShoppingListItem;
 import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.ui.BaseActivity;
-import com.natallia.radaman.goshopping.ui.listDetails.ListFireBaseItemAdapter;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 
 public class InviteFriendActivity extends BaseActivity {
@@ -30,20 +27,14 @@ public class InviteFriendActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_friend);
-        /**
-         * Create Firebase references
-         */
+        /* Create Firebase references */
         mUsersRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS);
 
-        /**
-         * Link layout elements from XML and setup the toolbar
-         */
+        /* Link layout elements from XML and setup the toolbar */
         initializeScreen();
 
-        /**
-         * Set interactive bits, such as click events/adapters
-         */
+        /* Set interactive bits, such as click events/adapters */
         mEditTextAddFriendEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -69,9 +60,7 @@ public class InviteFriendActivity extends BaseActivity {
 
                     /* Define and set the adapter otherwise. */
                 } else {
-                    /**
-                     * Setup the adapter
-                     */
+                    /* Setup the adapter */
                     Query query = mUsersRef.orderByChild(AppConstants.FIREBASE_PROPERTY_EMAIL)
                             .startAt(mInput).endAt(mInput + "~").limitToFirst(5);
 

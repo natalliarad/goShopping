@@ -49,14 +49,10 @@ public class ShareListActivity extends BaseActivity {
             finish();
             return;
         }
-        /**
-         * Link layout elements from XML and setup the toolbar
-         */
+        /* Link layout elements from XML and setup the toolbar */
         initializeScreen();
 
-        /**
-         * Create Firebase references
-         */
+        /* Create Firebase references */
         DatabaseReference currentUserFriendsRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_FRIENDS).child(mEncodedEmail);
         mActiveListRef = FirebaseDatabase.getInstance()
@@ -65,21 +61,17 @@ public class ShareListActivity extends BaseActivity {
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_LISTS_SHARED_WITH).child(mListId);
 
 
-        /**
-         * Add ValueEventListeners to Firebase references
-         * to control get data and control behavior and visibility of elements
-         */
+        /* Add ValueEventListeners to Firebase references
+         * to control get data and control behavior and visibility of elements */
 
         mActiveListRefListener = mActiveListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ShoppingList shoppingList = dataSnapshot.getValue(ShoppingList.class);
 
-                /**
-                 * Saving the most recent version of current shopping list into mShoppingList
+                /* Saving the most recent version of current shopping list into mShoppingList
                  * and pass it to setShoppingList() if present
-                 * finish() the activity otherwise
-                 */
+                 * finish() the activity otherwise */
                 if (shoppingList != null) {
                     mShoppingList = shoppingList;
                     mFriendAdapter.setShoppingList(mShoppingList);
@@ -98,7 +90,7 @@ public class ShareListActivity extends BaseActivity {
         mSharedWithListener = mSharedWithRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mSharedWithUsers = new HashMap<String, User>();
+                mSharedWithUsers = new HashMap<>();
                 for (DataSnapshot currentUser : dataSnapshot.getChildren()) {
                     mSharedWithUsers.put(currentUser.getKey(), currentUser.getValue(User.class));
                 }
@@ -112,9 +104,7 @@ public class ShareListActivity extends BaseActivity {
             }
         });
 
-        /**
-         * Setup the adapter
-         */
+        /* Setup the adapter */
         Query query = currentUserFriendsRef.orderByKey();
 
         FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()

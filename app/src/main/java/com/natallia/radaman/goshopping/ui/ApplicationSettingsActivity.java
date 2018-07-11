@@ -6,7 +6,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.natallia.radaman.goshopping.R;
@@ -34,17 +33,12 @@ public class ApplicationSettingsActivity extends PreferenceActivity {
             /* Load the preferences from an XML resource */
             addPreferencesFromResource(R.xml.preference_screen);
 
-            /**
-             * Bind preference summary to value for lists and meals sorting list preferences
-             */
+            /* Bind preference summary to value for lists and meals sorting list preferences */
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_name_sort_order_lists)));
         }
 
         /**
          * When preference is changed, save it's new value to default shared preferences
-         *
-         * @param preference
-         * @param newValue
          */
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -66,9 +60,6 @@ public class ApplicationSettingsActivity extends PreferenceActivity {
 
         /**
          * Sets preference summary to appropriate value
-         *
-         * @param preference
-         * @param value
          */
         private void setPreferenceSummary(Preference preference, Object value) {
             String stringValue = value.toString();

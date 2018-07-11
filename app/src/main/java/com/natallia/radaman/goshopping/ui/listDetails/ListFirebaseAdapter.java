@@ -1,14 +1,9 @@
 package com.natallia.radaman.goshopping.ui.listDetails;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -21,7 +16,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 
 import com.natallia.radaman.goshopping.R;
-import com.natallia.radaman.goshopping.model.ShoppingListItem;
 import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.utils.AppConstants;
 
@@ -41,23 +35,19 @@ public class ListFirebaseAdapter extends FirebaseListAdapter<ShoppingList> {
 
     @Override
     protected void populateView(View view, ShoppingList list, int position) {
-        /**
-         * Grab the needed Textivews and strings
-         */
+        /* Grab the needed Textivews and strings */
         TextView textViewListName = view.findViewById(R.id.text_view_list_name);
         final TextView textViewCreatedByUser = view.findViewById(R.id.text_view_created_by_user);
         final TextView textViewUsersShopping = view.findViewById(R.id.text_view_people_shopping_count);
 
         String authorEmail = list.getAuthor();
 
-        /* Set the list name and owner */
+        /* Set the list name and author */
         textViewListName.setText(list.getListName());
 
-        /**
-         * Show "1 person is shopping" if one person is shopping
+        /* Show "1 person is shopping" if one person is shopping
          * Show "N people shopping" if two or more users are shopping
-         * Show nothing if nobody is shopping
-         */
+         * Show nothing if nobody is shopping */
         if (list.getUsersShopping() != null) {
             int usersShopping = list.getUsersShopping().size();
             if (usersShopping == 1) {
@@ -73,10 +63,8 @@ public class ListFirebaseAdapter extends FirebaseListAdapter<ShoppingList> {
             /* otherwise show nothing */
             textViewUsersShopping.setText("");
         }
-        /**
-         * Set "Created by" text to "You" if current user is owner of the list
-         * Set "Created by" text to userName if current user is NOT owner of the list
-         */
+        /* Set "Created by" text to "You" if current user is author of the list
+         * Set "Created by" text to userName if current user is NOT author of the list */
         if (authorEmail != null) {
             if (authorEmail.equals(mEncodedEmail)) {
                 textViewCreatedByUser.setText(mActivity.getResources().getString(R.string.text_you));

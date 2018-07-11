@@ -20,8 +20,6 @@ import java.util.HashMap;
 public class FragmentEditListNameDialog extends FragmentEditListDialog {
     private static final String LOG_TAG = FragmentEditListNameDialog.class.getSimpleName();
     String mListName;
-    //String mListId;
-    //HashMap mSharedWith;
 
     /**
      * Public static constructor that creates fragment and passes a bundle with data into it when adapter is created
@@ -44,20 +42,16 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListName = getArguments().getString(AppConstants.KEY_LIST_NAME);
-        //mListId = getArguments().getString(AppConstants.KEY_LIST_ID);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        /** {@link EditListDialogFragment#createDialogHelper(int)} is a
-         * superclass method that creates the dialog
-         **/
+        /* {@link EditListDialogFragment#createDialogHelper(int)} is a superclass method
+         that creates the dialog */
         Dialog dialog = super.createDialogHelper(R.string.positive_button_edit_item);
-        /**
-         * {@link EditListDialogFragment#helpSetDefaultValueEditText(String)} is a superclass
-         * method that sets the default text of the TextView
-         */
+        /* {@link EditListDialogFragment#helpSetDefaultValueEditText(String)} is a superclass
+         * method that sets the default text of the TextView */
         helpSetDefaultValueEditText(mListName);
 
         return dialog;
@@ -69,19 +63,15 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
     protected void doListEdit() {
         final String inputListName = mEditTextForList.getText().toString();
 
-        /**
-         * Check that the user inputted list name is not empty, has changed the original name
-         * and that the dialog was properly initialized with the current name and id of the list.
-         */
+        /* Check that the user inputted list name is not empty, has changed the original name
+         * and that the dialog was properly initialized with the current name and id of the list. */
         if (!inputListName.equals("") && mListName != null &&
                 mListId != null && !inputListName.equals(mListName)) {
             /* Get the location to remove from */
             DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);
 
-            /**
-             * Create map and fill it in with deep path multi write operations list
-             */
+            /* Create map and fill it in with deep path multi write operations list */
             HashMap<String, Object> updatedListData = new HashMap<>();
 
             /* Add the value to update at the specified property for all lists */
@@ -90,7 +80,6 @@ public class FragmentEditListNameDialog extends FragmentEditListDialog {
 
             /* Update affected lists timestamps */
             AppUtils.updateMapWithTimestampLastChanged(mSharedWith, mListId, mAuthor, updatedListData);
-
 
             /* Do a deep-path update */
             firebaseRef.updateChildren(updatedListData, new DatabaseReference.CompletionListener() {

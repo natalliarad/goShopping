@@ -4,44 +4,32 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,10 +45,8 @@ import com.natallia.radaman.goshopping.model.User;
 import com.natallia.radaman.goshopping.ui.BaseActivity;
 import com.natallia.radaman.goshopping.ui.MainActivity;
 import com.natallia.radaman.goshopping.utils.AppConstants;
-import com.natallia.radaman.goshopping.utils.AppFormValidatonUtils;
 import com.natallia.radaman.goshopping.utils.AppUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,27 +71,20 @@ public class LoginActivity extends BaseActivity {
      * Variables related to Google Login
      */
     private GoogleSignInClient mGoogleSignInClient;
-    /* A flag indicating that a PendingIntent is in progress and prevents us from starting further intents. */
-    private boolean mGoogleIntentInProgress;
     /* Request code used to invoke sign in user interactions for Google+ */
     public static final int RC_GOOGLE_LOGIN = 1;
-    /* A Google account object that is populated if the user signs in with Google */
-    GoogleSignInAccount mGoogleAccount;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         mSharedPrefEditor = mSharedPref.edit();
-        /**
-         * Create Firebase references
-         */
+        /* Create Firebase references */
         mFirebaseRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL);
-        /**
-         //         *Configure Google Sign In
-         //         */
+        /* Configure Google Sign In */
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -113,14 +92,10 @@ public class LoginActivity extends BaseActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
 
-        /**
-         * Link layout elements from XML and setup progress dialog
-         */
+        /* Link layout elements from XML and setup progress dialog */
         initializeScreen();
 
-        /**
-         * Call signInPassword() when user taps "Done" keyboard action
-         */
+        /* Call signInPassword() when user taps "Done" keyboard action */
         mEditTextPasswordInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -135,19 +110,15 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /**
-         * This is the authentication listener that maintains the current user session
-         * and signs in automatically on application launch
-         */
+        /* This is the authentication listener that maintains the current user session
+         * and signs in automatically on application launch */
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mAuthProgressDialog.dismiss();
-                /**
-                 * If there is a valid session to be restored, start MainActivity.
+                /* If there is a valid session to be restored, start MainActivity.
                  * No need to pass data via SharedPreferences because app
-                 * already holds userName/provider data from the latest session
-                 */
+                 * already holds userName/provider data from the latest session */
                 if (firebaseAuth.getCurrentUser() != null) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -159,19 +130,13 @@ public class LoginActivity extends BaseActivity {
 
         /* Add auth listener to Firebase ref */
         mAuth.addAuthStateListener(mAuthStateListener);
-        /**
-         * Get the newly registered user email if present, use null as default value
-         */
+        /* Get the newly registered user email if present, use null as default value */
         String signupEmail = mSharedPref.getString(AppConstants.KEY_SIGNUP_EMAIL, null);
-        /**
-         * Fill in the email editText and remove value from SharedPreferences if email is present
-         */
+        /* Fill in the email editText and remove value from SharedPreferences if email is present */
         if (signupEmail != null) {
             mEditTextEmailInput.setText(signupEmail);
 
-            /**
-             * Clear signupEmail sharedPreferences to make sure that they are used just once
-             */
+            /* Clear signupEmail sharedPreferences to make sure that they are used just once */
             mSharedPrefEditor.putString(AppConstants.KEY_SIGNUP_EMAIL, null).apply();
         }
     }
@@ -217,7 +182,6 @@ public class LoginActivity extends BaseActivity {
         mEditTextEmailInput = findViewById(R.id.edit_text_email);
         mEditTextPasswordInput = findViewById(R.id.edit_text_password);
         LinearLayout linearLayoutLoginActivity = findViewById(R.id.linear_layout_login_activity);
-        //initializeBackground(linearLayoutLoginActivity);
         /* Setup the progress dialog that is displayed later when authenticating with Firebase */
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
@@ -233,9 +197,7 @@ public class LoginActivity extends BaseActivity {
     public void signInPassword() {
         String email = mEditTextEmailInput.getText().toString();
         String password = mEditTextPasswordInput.getText().toString();
-        /**
-         * If email and password are not empty show progress dialog and try to authenticate
-         */
+        /* If email and password are not empty show progress dialog and try to authenticate */
         if (email.equals("")) {
             mEditTextEmailInput.setError(getString(R.string.error_cannot_be_empty));
             return;
@@ -256,9 +218,7 @@ public class LoginActivity extends BaseActivity {
                             mAuthProgressDialog.dismiss();
                             Log.i(LOG_TAG, provider + " " + getString(R.string.log_message_auth_successful));
                             if (user != null) {
-                                /**
-                                 * If user has logged in with Google provider
-                                 */
+                                /* If user has logged in with Google provider */
                                 if (provider.contains("google")) {
                                     setAuthenticatedUserGoogle(user);
                                 } else {
@@ -278,11 +238,9 @@ public class LoginActivity extends BaseActivity {
                             }
                         } else {
                             mAuthProgressDialog.dismiss();
-                            /**
-                             * Use utility method to check the network connection state
+                            /* Use utility method to check the network connection state
                              * Show "No network connection" if there is no connection
-                             * Show Firebase specific error message otherwise
-                             */
+                             * Show Firebase specific error message otherwise */
                             String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
                             switch (errorCode) {
                                 case "ERROR_USER_DOES_NOT_EXIST":
@@ -338,25 +296,19 @@ public class LoginActivity extends BaseActivity {
      */
     private void setAuthenticatedUserPasswordProvider(final FirebaseUser firebaseUser) {
         final String unprocessedEmail = firebaseUser.getEmail();
-        /**
-         * Encode user email replacing "." with ","
-         * to be able to use it as a Firebase db key
-         */
+        /* Encode user email replacing "." with ","
+         * to be able to use it as a Firebase db key */
         mEncodedEmail = AppUtils.encodeEmail(unprocessedEmail);
         final DatabaseReference userRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS).child(mEncodedEmail);
-        /**
-         * Check if current user has logged in at least once
-         */
+        /* Check if current user has logged in at least once */
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if (user != null) {
-                    /**
-                     * If recently registered user has hasLoggedInWithPassword = "false"
-                     * (never logged in using password provider)
-                     */
+                    /*  If recently registered user has hasLoggedInWithPassword = "false"
+                     * (never logged in using password provider) */
                     if (firebaseUser.isEmailVerified()) {
                         if (user.isHasLoggedInWithPassword() != true)
                             user.setHasLoggedInWithPassword(true);
@@ -450,19 +402,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     /**
-     * Signs you into ShoppingList++ using the Google Login Provider
-     *
-     * @param account A Google OAuth access token returned from Google
-     */
-    private void loginWithGoogle(GoogleSignInAccount account) {
-       // AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        //mAuth.signInWithCredential(credential);
-    }
-
-    /**
      * GOOGLE SIGN IN CODE
      */
-
     /* Sets up the Google Sign In Button : https://developers.google.com/android/reference/com/google/android/gms/common/SignInButton */
     private void setupGoogleSignIn() {
         SignInButton signInButton = findViewById(R.id.login_with_google);
@@ -487,10 +428,8 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         super.onConnectionFailed(connectionResult);
-        /**
-         * An unresolvable error has occurred and Google APIs (including Sign-In) will not
-         * be available.
-         */
+        /* An unresolvable error has occurred and Google APIs (including Sign-In) will not
+         * be available. */
         mAuthProgressDialog.dismiss();
         showErrorToast(connectionResult.toString());
     }
@@ -502,7 +441,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /* Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...); */
+        /* Result returned from launching the Intent from GoogleSignInApi */
         if (requestCode == RC_GOOGLE_LOGIN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {

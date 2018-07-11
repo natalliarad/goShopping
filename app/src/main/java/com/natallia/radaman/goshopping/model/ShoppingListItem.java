@@ -15,9 +15,6 @@ public class ShoppingListItem {
     /**
      * Use this constructor to create new ShoppingListItem.
      * Takes shopping list item name and list item author email as params
-     *
-     * @param itemName
-     * @param author
      */
     public ShoppingListItem(String itemName, String author) {
         this.itemName = itemName;

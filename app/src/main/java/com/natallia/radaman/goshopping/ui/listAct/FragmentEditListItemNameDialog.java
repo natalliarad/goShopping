@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
 import com.natallia.radaman.goshopping.model.User;
@@ -48,14 +47,11 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        /** {@link FragmentEditListDialog#createDialogHelper(int)} is a
-         * superclass method that creates the dialog
-         */
+        /*{@link FragmentEditListDialog#createDialogHelper(int)} is a
+         * superclass method that creates the dialog */
         Dialog dialog = super.createDialogHelper(R.string.positive_button_edit_item);
-        /**
-         * {@link EditListDialogFragment#helpSetDefaultValueEditText(String)} is a superclass
-         * method that sets the default text of the TextView
-         */
+        /* {@link EditListDialogFragment#helpSetDefaultValueEditText(String)} is a superclass
+         * method that sets the default text of the TextView */
         super.helpSetDefaultValueEditText(mItemName);
 
         return dialog;
@@ -66,10 +62,8 @@ public class FragmentEditListItemNameDialog extends FragmentEditListDialog {
      */
     protected void doListEdit() {
         String nameInput = mEditTextForList.getText().toString();
-        /**
-         * Set input text to be the current list item name if it is not empty and is not the
-         * previous name.
-         */
+        /* Set input text to be the current list item name if it is not empty and is not the
+         * previous name. */
         if (!nameInput.equals("") && !nameInput.equals(mItemName)) {
             DatabaseReference firebaseRef = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl(AppConstants.FIREBASE_URL);

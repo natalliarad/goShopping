@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,19 +12,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.firebase.ui.database.FirebaseListOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.natallia.radaman.goshopping.R;
 import com.natallia.radaman.goshopping.model.ShoppingList;
-import com.natallia.radaman.goshopping.model.ShoppingListItem;
 import com.natallia.radaman.goshopping.utils.AppConstants;
-import com.natallia.radaman.goshopping.utils.AppUtils;
-
-import java.util.Date;
 
 /**
  * A simple Fragment subclass that shows a list of all shopping lists a user can see.
@@ -38,12 +30,11 @@ public class FragmentShoppingList extends Fragment {
     private ListView mListView;
 
     public FragmentShoppingList() {
-        /* Required empty public constructor */
+
     }
 
     /**
-     * Create fragment and pass bundle with data as it's arguments
-     * Right now there are not arguments...but eventually there will be.
+     * Create fragment and pass bundle with data as it's arguments.
      */
     public static FragmentShoppingList newInstance(String encodedEmail) {
         FragmentShoppingList fragment = new FragmentShoppingList();
@@ -72,15 +63,11 @@ public class FragmentShoppingList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /**
-         * Initalize UI elements
-         */
+        /* Initalize UI elements */
         View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
         initializeScreen(rootView);
 
-        /**
-         * Set interactive bits, such as click events and adapters
-         */
+        /* Set interactive bits, such as click events and adapters */
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -106,24 +93,17 @@ public class FragmentShoppingList extends Fragment {
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortOrder = sharedPref.getString(AppConstants.KEY_PREF_SORT_ORDER_LISTS,
                 AppConstants.ORDER_BY_KEY);
-        /**
-         * Create Firebase references
-         */
+        /* Create Firebase references */
         Query orderedActiveUserListsRef;
         DatabaseReference activeListsRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl(AppConstants.FIREBASE_URL_USER_LISTS).child(mEncodedEmail);
-        
-        /**
-         * Sort active lists by "date created"
-         * if it's been selected in the SettingsActivity
-         */
+
+        /* Sort active lists by "date created" if it's been selected in the SettingsActivity */
         if (sortOrder.equals(AppConstants.ORDER_BY_KEY)) {
             orderedActiveUserListsRef = activeListsRef.orderByKey();
         } else {
-            /**
-             * Sort active by lists by name or datelastChanged. Otherwise
-             * depending on what's been selected in SettingsActivity
-             */
+            /* Sort active by lists by name or datelastChanged. Otherwise
+             * depending on what's been selected in SettingsActivity */
             orderedActiveUserListsRef = activeListsRef.orderByChild(sortOrder);
         }
 
@@ -132,14 +112,10 @@ public class FragmentShoppingList extends Fragment {
                 .setQuery(orderedActiveUserListsRef, ShoppingList.class)
                 .setLifecycleOwner(this)
                 .build();
-        /**
-         * Create the adapter, giving it the activity, model class, layout for each row in
-         * the list and finally, a reference to the Firebase location with the list data
-         */
+        /* Create the adapter, giving it the FirebaseListOptions options, activity and user email
+         * for each row in the list */
         mActiveListFirebaseAdapter = new ListFirebaseAdapter(options, getActivity(), mEncodedEmail);
-        /**
-         * Set the adapter to the mListView
-         */
+        /* Set the adapter to the mListView */
         mListView.setAdapter(mActiveListFirebaseAdapter);
     }
 

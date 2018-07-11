@@ -29,10 +29,6 @@ public abstract class FragmentEditListDialog extends DialogFragment {
     /**
      * Helper method that creates a basic bundle of all of the information needed to change
      * values in a shopping list.
-     *
-     * @param shoppingList
-     * @param resource
-     * @return
      */
     protected static Bundle newInstanceHelper(ShoppingList shoppingList, int resource, String listId,
                                               String encodedEmail, HashMap<String, User> sharedWithUsers) {
@@ -76,9 +72,7 @@ public abstract class FragmentEditListDialog extends DialogFragment {
         View rootView = inflater.inflate(mResource, null);
         mEditTextForList = rootView.findViewById(R.id.edit_text_list_dialog);
 
-        /**
-         * Call doListEdit() when user taps "Done" keyboard action
-         */
+        /* Call doListEdit() when user taps "Done" keyboard action */
         mEditTextForList.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -86,9 +80,7 @@ public abstract class FragmentEditListDialog extends DialogFragment {
                         .ACTION_DOWN) {
                     doListEdit();
 
-                    /**
-                     * Close the dialog fragment when done
-                     */
+                    /* Close the dialog fragment when done */
                     FragmentEditListDialog.this.getDialog().cancel();
                 }
                 return true;
@@ -102,20 +94,14 @@ public abstract class FragmentEditListDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         doListEdit();
-
-                        /**
-                         * Close the dialog fragment
-                         */
+                        /* Close the dialog fragment */
                         FragmentEditListDialog.this.getDialog().cancel();
                     }
                 })
                 .setNegativeButton(R.string.negative_button_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
-                        /**
-                         * Close the dialog fragment
-                         */
+                        /* Close the dialog fragment */
                         FragmentEditListDialog.this.getDialog().cancel();
                     }
                 });
@@ -127,7 +113,7 @@ public abstract class FragmentEditListDialog extends DialogFragment {
      * Set the EditText text to be the inputted text
      * and put the pointer at the end of the input
      *
-     * @param defaultText
+     * @param defaultText text to be inputted
      */
     protected void helpSetDefaultValueEditText(String defaultText) {
         mEditTextForList.setText(defaultText);
@@ -135,7 +121,7 @@ public abstract class FragmentEditListDialog extends DialogFragment {
     }
 
     /**
-     * Method to be overriden with whatever edit is supposed to happen to the list
+     * Method to be overridden with whatever edit is supposed to happen to the list
      */
     protected abstract void doListEdit();
 }

@@ -81,9 +81,7 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
         /* Gets the id of the item to remove */
         final String itemToRemoveId = this.getRef(position).getKey();
 
-        /**
-         * Set the on click listener for "Remove list item" button
-         */
+        /* Set the on click listener for "Remove list item" button */
         buttonRemoveItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,12 +139,10 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
     private void setItemAppearanceBaseOnBoughtStatus(String author, final TextView
             textViewBoughtByUser, TextView textViewBoughtBy, ImageButton buttonRemoveItem,
                                                      TextView textViewItemName, ShoppingListItem item) {
-        /**
-         * If selected item is bought
-         * Set "Bought by" text to "You" if current user is owner of the list
-         * Set "Bought by" text to userName if current user is NOT owner of the list
-         * Set the remove item button invisible if current user is NOT list or item owner
-         */
+        /* If selected item is bought
+         * Set "Bought by" text to "You" if current user is author of the list
+         * Set "Bought by" text to userName if current user is NOT author of the list
+         * Set the remove item button invisible if current user is NOT list or item author */
         if (item.isBought() && item.getBoughtBy() != null) {
 
             textViewBoughtBy.setVisibility(View.VISIBLE);
@@ -163,7 +159,7 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
 
                 DatabaseReference boughtByUserRef = FirebaseDatabase.getInstance()
                         .getReferenceFromUrl(AppConstants.FIREBASE_URL_USERS).child(item.getBoughtBy());
-                /* Get the item's owner's name; use a SingleValueEvent listener for memory efficiency */
+                /* Get the item's author's name; use a SingleValueEvent listener for memory efficiency */
                 boughtByUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -182,11 +178,9 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
                 });
             }
         } else {
-            /**
-             * If selected item is NOT bought
-             * Set "Bought by" text to be empty and invisible
-             * Set the remove item button visible if current user is owner of the list or selected item
-             */
+            /* If selected item is NOT bought
+             * Set "Bought by" text to be empty and invisible. Set the remove item button visible
+             * if current user is author of the list or selected item */
 
             /* Remove the strike-through */
             textViewItemName.setPaintFlags(textViewItemName.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
@@ -194,10 +188,8 @@ public class ListFireBaseItemAdapter extends FirebaseListAdapter<ShoppingListIte
             textViewBoughtBy.setVisibility(View.INVISIBLE);
             textViewBoughtByUser.setVisibility(View.INVISIBLE);
             textViewBoughtByUser.setText("");
-            /**
-             * If you are the owner of the item or the owner of the list, then the remove icon
-             * is visible.
-             */
+            /* If you are the author of the item or the author of the list, then the remove icon
+             * is visible. */
             if (author.equals(mEncodedEmail) || (mShoppingList != null && mShoppingList.getAuthor()
                     .equals(mEncodedEmail))) {
                 buttonRemoveItem.setVisibility(View.VISIBLE);
